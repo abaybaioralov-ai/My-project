@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type PointerEvent } from 'react';
 import stadiumImage from './assets/stadium-ai-world-cup.png';
 import {
   loadUpcomingPredictions,
@@ -8,6 +8,8 @@ import {
 import { supabase } from './lib/supabase';
 
 type Aim = 'left' | 'center' | 'right';
+type AccessMode = 'guest' | 'user' | null;
+type AuthMode = 'signin' | 'signup';
 type MatchFilter = 'all' | 'live' | 'high' | 'upset';
 type GroupStanding = {
   group: string;
@@ -172,6 +174,129 @@ function localMatchAnswer(prediction: WorldCupPrediction, question: string) {
   const risk = isUpsetCandidate(prediction) ? 'This is an upset-risk match because the model edge is narrow.' : 'The model sees a clearer favorite here.';
 
   return `${favorite} is the current AI pick for ${prediction.homeCode} vs ${prediction.awayCode}. Projected score: ${prediction.predictedScore}. ${risk} ${prediction.aiSummary} Question noted: "${question}"`;
+}
+
+function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) => void }) {
+  const [authMode, setAuthMode] = useState<AuthMode>('signin');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [isBusy, setIsBusy] = useState(false);
+
+  async function handleAuth(event: FormEvent) {
+    event.preventDefault();
+    setIsBusy(true);
+    setMessage('');
+
+    const request = authMode === 'signin'
+      ? supabase.auth.signInWithPassword({ email, password })
+      : supabase.auth.signUp({ email, password });
+    const { data, error } = await request;
+
+    if (error) {
+      setMessage(error.message);
+      setIsBusy(false);
+      return;
+    }
+
+    if (data.session) {
+      onEnter('user');
+      return;
+    }
+
+    setMessage('Аккаунт создан. Теперь можно войти.');
+    setAuthMode('signin');
+    setIsBusy(false);
+  }
+
+  async function handleGoogleSignIn() {
+    setIsBusy(true);
+    setMessage('');
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      setMessage(error.message);
+      setIsBusy(false);
+    }
+  }
+
+  return (
+    <main
+      className="start-screen"
+      style={{
+        backgroundImage: `linear-gradient(90deg, rgba(18, 49, 58, 0.88), rgba(18, 49, 58, 0.58), rgba(18, 49, 58, 0.22)), url(${stadiumImage})`,
+      }}
+    >
+      <section className="start-panel">
+        <div className="start-copy">
+          <p className="eyebrow">AI World Cup Predictor 2026</p>
+          <h1>Прогнозы матчей, группы и AI-анализ в одном месте.</h1>
+          <p>
+            Смотри ближайшие матчи, прогнозируемый счет, вероятность победы и объяснение от AI.
+            Можно войти в аккаунт или открыть сайт как гость.
+          </p>
+          <div className="start-features">
+            <span>Live Supabase feed</span>
+            <span>AI match chat</span>
+            <span>Penalty game</span>
+          </div>
+        </div>
+
+        <form className="auth-box" onSubmit={handleAuth}>
+          <div className="auth-tabs">
+            <button
+              className={authMode === 'signin' ? 'is-active' : ''}
+              onClick={() => setAuthMode('signin')}
+              type="button"
+            >
+              Войти
+            </button>
+            <button
+              className={authMode === 'signup' ? 'is-active' : ''}
+              onClick={() => setAuthMode('signup')}
+              type="button"
+            >
+              Регистрация
+            </button>
+          </div>
+
+          <label>
+            Email
+            <input onChange={(event) => setEmail(event.target.value)} required type="email" value={email} />
+          </label>
+          <label>
+            Пароль
+            <input
+              minLength={6}
+              onChange={(event) => setPassword(event.target.value)}
+              required
+              type="password"
+              value={password}
+            />
+          </label>
+
+          <button className="primary-auth" disabled={isBusy} type="submit">
+            {isBusy ? 'Подождите...' : authMode === 'signin' ? 'Войти' : 'Создать аккаунт'}
+          </button>
+          <button className="google-auth" disabled={isBusy} onClick={handleGoogleSignIn} type="button">
+            <span>G</span>
+            Войти через Google
+          </button>
+          <button className="guest-auth" onClick={() => onEnter('guest')} type="button">
+            Войти как гость
+          </button>
+
+          {message && <p className="auth-message">{message}</p>}
+        </form>
+      </section>
+    </main>
+  );
 }
 
 function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
@@ -375,6 +500,7 @@ function PenaltyGame() {
 }
 
 function App() {
+  const [accessMode, setAccessMode] = useState<AccessMode>(null);
   const [predictions, setPredictions] = useState<WorldCupPrediction[]>(fallbackPredictions);
   const [selectedId, setSelectedId] = useState(fallbackPredictions[0].id);
   const [isLive, setIsLive] = useState(false);
@@ -396,6 +522,14 @@ function App() {
       setLoadError(error instanceof Error ? error.message : 'Supabase is unavailable');
     }
   }
+
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        setAccessMode('user');
+      }
+    });
+  }, []);
 
   useEffect(() => {
     void refreshPredictions();
@@ -420,6 +554,10 @@ function App() {
     .sort((a, b) => a.confidence - b.confidence)[0] ?? predictions[0];
   const groups = groupStandings.filter((group) => ['A', 'E', 'I', 'L'].includes(group.group));
 
+  if (!accessMode) {
+    return <StartScreen onEnter={setAccessMode} />;
+  }
+
   return (
     <main className="app-shell">
       <section
@@ -440,6 +578,9 @@ function App() {
             <a href="#matches">Live matches</a>
             <a href="#models">AI models</a>
             <a href="#groups">Groups</a>
+            <button className="topbar-action" onClick={() => setAccessMode(null)} type="button">
+              {accessMode === 'guest' ? 'Guest' : 'Account'}
+            </button>
           </div>
         </nav>
 
