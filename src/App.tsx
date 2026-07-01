@@ -213,6 +213,25 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
     setIsBusy(true);
     setMessage('');
 
+    try {
+      const settingsResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/settings`, {
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
+      });
+      const settings = await settingsResponse.json();
+
+      if (!settings?.external?.google) {
+        setMessage('Google вход пока не включен в Supabase проекте, который использует этот сайт.');
+        setIsBusy(false);
+        return;
+      }
+    } catch {
+      setMessage('Не удалось проверить Google вход. Попробуй еще раз.');
+      setIsBusy(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
