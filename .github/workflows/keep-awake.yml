@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Ping Supabase auth health
         run: |
-          SUPABASE_URL="https://hddgjrahppxnixhrrjke.supabase.co"
-          SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkZGdqcmFocHB4bml4aHJyamtlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3ODkxMTksImV4cCI6MjA5ODM2NTExOX0.fNd1ftp_JJsF5RqNngAD-xkTlVN7Eu_rszKuaCyahzY"
+          SUPABASE_URL="https://ledqshysnrdmnuiikujt.supabase.co"
+          SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlZHFzaHlzbnJkbW51aWlrdWp0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2OTk2NzMsImV4cCI6MjA5ODI3NTY3M30.XE0I_ZOIiRlCVLrkE_2mWnJeMzECxzuAlBMbVULfuWM"
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
             -H "apikey: ${SUPABASE_ANON_KEY}" \
             "${SUPABASE_URL}/auth/v1/health")
