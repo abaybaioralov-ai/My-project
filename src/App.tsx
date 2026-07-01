@@ -5,7 +5,7 @@ import {
   subscribeToPredictions,
   type WorldCupPrediction,
 } from './lib/worldCupPredictions';
-import { supabase } from './lib/supabase';
+import { supabase, supabaseAnonKey, supabaseUrl } from './lib/supabase';
 
 type Aim = 'left' | 'center' | 'right';
 type AccessMode = 'guest' | 'user' | null;
@@ -214,9 +214,9 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
     setMessage('');
 
     try {
-      const settingsResponse = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/auth/v1/settings`, {
+      const settingsResponse = await fetch(`${supabaseUrl}/auth/v1/settings`, {
         headers: {
-          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+          apikey: supabaseAnonKey,
         },
       });
       const settings = await settingsResponse.json();
