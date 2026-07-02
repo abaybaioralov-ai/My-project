@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ScoreAI Profile</title>
+    <style>
+      :root {
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --bg: #f3f7fa;
+        --ink: #101418;
+        --muted: #5b6770;
+        --line: #d7e0e6;
+        --surface: #ffffff;
+        --surface-2: #eef4f8;
+        --accent: #1d71b8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 12% 16%, rgba(29, 113, 184, 0.18), transparent 28%),
+          linear-gradient(135deg, #ffffff 0%, var(--bg) 52%, #dfeaf0 100%);
+        color: var(--ink);
+      }
+
+      body[data-theme="dark"],
+      body[data-theme="lamborghini"],
+      body[data-theme="bugatti"] {
+        --bg: #000000;
+        --ink: #ffffff;
+        --muted: #a8afb6;
+        --line: #303030;
+        --surface: #141414;
+        --surface-2: #202020;
+        background: #000000;
+      }
+
+      body[data-theme="lamborghini"] {
+        --accent: #ffc000;
+        font-family: "Arial Narrow", Impact, Arial, sans-serif;
+      }
+
+      body[data-theme="bugatti"] {
+        --accent: #ffffff;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      body[data-theme="bmw-m"] {
+        --accent: #1c69d4;
+        background:
+          linear-gradient(90deg, rgba(0, 102, 177, 0.12), transparent 26%),
+          linear-gradient(180deg, #ffffff 0%, #eef3f7 100%);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .page {
+        width: min(1080px, calc(100% - 36px));
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 28px 0;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .pill {
+        padding: 10px 14px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.76);
+        color: var(--ink);
+        font-size: 13px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      body[data-theme="dark"] .pill,
+      body[data-theme="lamborghini"] .pill,
+      body[data-theme="bugatti"] .pill {
+        background: rgba(20, 20, 20, 0.82);
+      }
+
+      .hero {
+        padding: 84px 0 30px;
+      }
+
+      .eyebrow {
+        width: fit-content;
+        margin: 0 0 18px;
+        padding: 8px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        max-width: 780px;
+        margin: 0;
+        font-size: clamp(44px, 8vw, 86px);
+        line-height: 0.94;
+      }
+
+      .profile-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .profile-card {
+        min-height: 170px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+      }
+
+      body[data-theme="lamborghini"] .profile-card,
+      body[data-theme="bugatti"] .profile-card {
+        border-radius: 0;
+      }
+
+      .profile-card span,
+      .profile-card p {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .profile-card strong {
+        display: block;
+        margin: 44px 0 10px;
+        color: var(--ink);
+        font-size: 28px;
+        line-height: 1;
+        overflow-wrap: anywhere;
+      }
+
+      select {
+        width: 100%;
+        min-height: 44px;
+        margin: 42px 0 10px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-2);
+        color: var(--ink);
+        font: inherit;
+        font-weight: 900;
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          width: min(100% - 28px, 1080px);
+        }
+
+        .topbar,
+        .profile-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .topbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <nav class="topbar">
+        <a class="pill" href="/">Back to main site</a>
+        <a class="pill" href="/themes.html">Themes</a>
+      </nav>
+
+      <section class="hero">
+        <p class="eyebrow">Profile</p>
+        <h1>Your matchday setup.</h1>
+      </section>
+
+      <section class="profile-grid" aria-label="Profile details">
+        <article class="profile-card">
+          <span>Current theme</span>
+          <strong id="profile-theme">Light</strong>
+          <p>Saved for the main site.</p>
+        </article>
+        <article class="profile-card">
+          <span>Favorite team</span>
+          <select id="favorite-team">
+            <option value="">Choose team</option>
+            <option>Argentina</option>
+            <option>Brazil</option>
+            <option>England</option>
+            <option>France</option>
+            <option>Germany</option>
+            <option>Mexico</option>
+            <option>Portugal</option>
+            <option>Spain</option>
+            <option>USA</option>
+          </select>
+          <p id="favorite-team-note">Pick a team for your profile.</p>
+        </article>
+        <article class="profile-card">
+          <span>Saved picks</span>
+          <strong id="saved-picks">0</strong>
+          <p>Guest predictions saved in this browser.</p>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const validThemes = ['light', 'dark', 'bmw-m', 'lamborghini', 'bugatti'];
+      const labels = {
+        light: 'Light',
+        dark: 'Dark',
+        'bmw-m': 'BMW-M',
+        lamborghini: 'Lamborghini',
+        bugatti: 'Bugatti',
+      };
+      const theme = validThemes.includes(localStorage.getItem('theme-mode'))
+        ? localStorage.getItem('theme-mode')
+        : 'light';
+      const favoriteTeam = document.querySelector('#favorite-team');
+      const favoriteTeamNote = document.querySelector('#favorite-team-note');
+
+      document.body.dataset.theme = theme;
+      document.querySelector('#profile-theme').textContent = labels[theme] ?? theme;
+      document.querySelector('#saved-picks').textContent = String(
+        Object.keys(localStorage).filter((key) => key.startsWith('guest-prediction:')).length,
+      );
+
+      favoriteTeam.value = localStorage.getItem('favorite-team') ?? '';
+      favoriteTeamNote.textContent = favoriteTeam.value
+        ? `${favoriteTeam.value} is saved as your favorite team.`
+        : 'Pick a team for your profile.';
+
+      favoriteTeam.addEventListener('change', () => {
+        localStorage.setItem('favorite-team', favoriteTeam.value);
+        favoriteTeamNote.textContent = favoriteTeam.value
+          ? `${favoriteTeam.value} is saved as your favorite team.`
+          : 'Pick a team for your profile.';
+      });
+    </script>
+  </body>
+</html>

@@ -426,6 +426,33 @@ p {
   align-items: start;
 }
 
+.soon-alert {
+  width: min(1200px, calc(100% - 36px));
+  min-height: 74px;
+  margin: 18px auto 0;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(217, 149, 43, 0.32);
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(217, 149, 43, 0.18), rgba(236, 246, 241, 0.92) 68%);
+  box-shadow: 0 18px 48px rgba(18, 49, 58, 0.18);
+}
+
+.soon-alert span,
+.soon-alert small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.soon-alert strong {
+  font-size: 26px;
+}
+
 .fixture-list,
 .match-board,
 .side-panel > *,
@@ -711,6 +738,83 @@ p {
   background: rgba(255, 255, 255, 0.56);
 }
 
+.match-details,
+.my-prediction {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(20, 49, 58, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.detail-grid div {
+  min-height: 74px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgba(20, 49, 58, 0.06);
+}
+
+.detail-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.detail-grid strong {
+  display: block;
+  margin-top: 8px;
+  overflow: hidden;
+  font-size: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prediction-form {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr) 92px;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.prediction-form input {
+  min-height: 42px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(20, 49, 58, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+}
+
+.prediction-form button {
+  min-height: 42px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #f7fffb;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.prediction-form button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.my-prediction > p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .assistant-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 92px;
@@ -896,6 +1000,43 @@ p {
   animation: aim-pulse 1.2s ease-in-out infinite;
 }
 
+.score-pop {
+  animation: score-pop 420ms ease-out;
+}
+
+.game-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.difficulty-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.difficulty-tabs button,
+.sound-toggle {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.difficulty-tabs button.is-active,
+.sound-toggle {
+  background: var(--green);
+  color: #ffffff;
+}
+
 .goal-box::after {
   content: "";
   position: absolute;
@@ -920,6 +1061,44 @@ p {
   pointer-events: none;
   transform: perspective(400px) rotateX(8deg);
   transform-origin: top;
+}
+
+.goal-frame {
+  position: absolute;
+  inset: 18px 12% 62px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.goal-post,
+.goal-crossbar {
+  position: absolute;
+  display: block;
+  background: linear-gradient(180deg, #ffffff, #dfe8e4);
+  box-shadow: 0 6px 14px rgba(20, 49, 58, 0.22);
+}
+
+.goal-post {
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  border-radius: 999px 999px 4px 4px;
+}
+
+.goal-post-left {
+  left: 0;
+}
+
+.goal-post-right {
+  right: 0;
+}
+
+.goal-crossbar {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  border-radius: 999px;
 }
 
 .keeper {
@@ -1018,6 +1197,151 @@ p {
 
 .trail-right {
   transform: translateX(12px) rotate(34deg);
+}
+
+.striker {
+  position: absolute;
+  left: calc(50% - 94px);
+  bottom: 20px;
+  width: 76px;
+  height: 112px;
+  z-index: 3;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 12px rgba(20, 49, 58, 0.22));
+  transition: left 220ms ease, transform 220ms ease;
+}
+
+.striker span {
+  position: absolute;
+  display: block;
+}
+
+.striker-head {
+  top: 0;
+  left: 27px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(20, 49, 58, 0.2);
+  border-radius: 999px;
+  background: #e9b98f;
+}
+
+.striker-body {
+  top: 26px;
+  left: 22px;
+  width: 34px;
+  height: 44px;
+  border-radius: 14px 14px 9px 9px;
+  background: linear-gradient(180deg, #f7fffb 0 34%, #e22718 34% 100%);
+}
+
+.striker-arm {
+  top: 38px;
+  width: 10px;
+  height: 34px;
+  border-radius: 999px;
+  background: #f7fffb;
+  transform-origin: top center;
+}
+
+.striker-arm::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  bottom: -20px;
+  width: 8px;
+  height: 24px;
+  border-radius: 999px;
+  background: #e9b98f;
+}
+
+.striker-arm-left {
+  left: 15px;
+  transform: rotate(8deg);
+}
+
+.striker-arm-left::after {
+  transform: rotate(-2deg);
+  transform-origin: top center;
+}
+
+.striker-arm-right {
+  right: 15px;
+  transform: rotate(-8deg);
+  transform-origin: top center;
+}
+
+.striker-arm-right::after {
+  transform: rotate(2deg);
+  transform-origin: top center;
+}
+
+.striker-leg {
+  top: 66px;
+  width: 12px;
+  height: 48px;
+  border-radius: 999px;
+  background: #14313a;
+  transform-origin: top center;
+}
+
+.striker-leg-left {
+  left: 27px;
+  transform: rotate(12deg);
+}
+
+.striker-leg-right {
+  left: 40px;
+  transform: rotate(-18deg);
+}
+
+.striker-left {
+  left: calc(20% - 76px);
+  transform: rotate(-4deg);
+}
+
+.striker-center {
+  left: calc(50% - 94px);
+}
+
+.striker-right {
+  left: calc(80% - 112px);
+  transform: rotate(4deg);
+}
+
+.striker-ready.striker-left,
+.striker-ready.striker-right {
+  animation: striker-walk-body 520ms ease-out 1;
+}
+
+.striker-ready.striker-left .striker-leg-left,
+.striker-ready.striker-right .striker-leg-left {
+  animation: striker-walk-left 520ms ease-out 1;
+}
+
+.striker-ready.striker-left .striker-leg-right,
+.striker-ready.striker-right .striker-leg-right {
+  animation: striker-walk-right 520ms ease-out 1;
+}
+
+.striker-ready.striker-left .striker-arm-left,
+.striker-ready.striker-right .striker-arm-left {
+  animation: striker-arm-walk-left 520ms ease-out 1;
+}
+
+.striker-ready.striker-left .striker-arm-right,
+.striker-ready.striker-right .striker-arm-right {
+  animation: striker-arm-walk-right 520ms ease-out 1;
+}
+
+.striker-goal .striker-leg-right,
+.striker-saved .striker-leg-right {
+  animation: striker-kick 420ms ease-out;
+}
+
+.striker-goal .striker-body,
+.striker-saved .striker-body {
+  animation: striker-lean 420ms ease-out;
 }
 
 .ball {
@@ -1185,10 +1509,17 @@ p {
     min-height: 40px;
   }
 
+  .soon-alert,
+  .detail-grid,
+  .prediction-form {
+    grid-template-columns: 1fr;
+  }
+
   .shot-controls {
     grid-template-columns: 1fr 1fr;
   }
 
+  .game-options,
   .game-status {
     align-items: flex-start;
     flex-direction: column;
@@ -1232,10 +1563,1216 @@ p {
   }
 }
 
+@keyframes score-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.18);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes striker-kick {
+  0% {
+    transform: rotate(-18deg);
+  }
+
+  45% {
+    transform: rotate(-62deg) translateY(-4px);
+  }
+
+  100% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes striker-lean {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0);
+  }
+
+  45% {
+    transform: translateX(5px) rotate(5deg);
+  }
+}
+
+@keyframes striker-walk-body {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+@keyframes striker-walk-left {
+  0%,
+  100% {
+    transform: rotate(18deg);
+  }
+
+  50% {
+    transform: rotate(-12deg);
+  }
+}
+
+@keyframes striker-walk-right {
+  0%,
+  100% {
+    transform: rotate(-18deg);
+  }
+
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes striker-arm-walk-left {
+  0%,
+  100% {
+    transform: rotate(12deg);
+  }
+
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes striker-arm-walk-right {
+  0%,
+  100% {
+    transform: rotate(-12deg);
+  }
+
+  50% {
+    transform: rotate(-2deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero::after,
   .hero-motion span,
-  .goal-box.ready .ball {
+  .goal-box.ready .ball,
+  .striker-goal .striker-leg-right,
+  .striker-saved .striker-leg-right,
+  .striker-goal .striker-body,
+  .striker-saved .striker-body,
+  .striker-ready,
+  .striker-ready .striker-leg-left,
+  .striker-ready .striker-leg-right,
+  .striker-ready .striker-arm-left,
+  .striker-ready .striker-arm-right,
+  .score-pop {
     animation: none;
   }
+}
+
+/* BMW M inspired theme from DESIGN.md */
+:root {
+  --bg: #000000;
+  --surface: #1a1a1a;
+  --surface-2: #262626;
+  --ink: #ffffff;
+  --muted: #7e7e7e;
+  --line: #3c3c3c;
+  --green: #0fa336;
+  --cyan: #1c69d4;
+  --amber: #f4b400;
+  --red: #e22718;
+  --m-blue-light: #0066b1;
+  --m-blue-dark: #1c69d4;
+  --m-red: #e22718;
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+body {
+  background: var(--bg);
+}
+
+.hero-motion {
+  display: none;
+}
+
+.start-screen,
+.hero {
+  background-color: #000;
+}
+
+.hero::after {
+  opacity: 0.2;
+}
+
+.start-panel,
+.dashboard,
+.soon-alert,
+.mini-game {
+  position: relative;
+}
+
+.start-copy,
+.auth-box,
+.fixture-list,
+.match-board,
+.side-panel > *,
+.group-card,
+.mini-game,
+.match-assistant,
+.match-details,
+.my-prediction,
+.ai-summary,
+.model-card,
+.team-side,
+.pick-center {
+  border-color: var(--line);
+  border-radius: 0;
+  background: var(--surface);
+  box-shadow: none;
+  color: var(--ink);
+}
+
+.start-copy,
+.auth-box {
+  backdrop-filter: none;
+}
+
+.start-copy::before,
+.match-board::before,
+.fixture-list::before,
+.mini-game::before {
+  content: "";
+  display: block;
+  height: 4px;
+  margin: -1px -1px 22px;
+  background: linear-gradient(90deg, var(--m-blue-light) 0 33%, var(--m-blue-dark) 33% 66%, var(--m-red) 66% 100%);
+}
+
+.start-copy h1,
+.hero h1,
+.section-title h2,
+.match-header h2,
+.mini-game h2 {
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.start-copy p:not(.eyebrow),
+.hero__copy,
+.ai-summary p,
+.match-assistant > p,
+.track-card p {
+  color: #bbbbbb;
+  font-weight: 300;
+}
+
+.eyebrow,
+.section-title p,
+.fixture-button span,
+.fixture-button small,
+.match-header p,
+.team-side span,
+.pick-center span,
+.model-card span,
+.model-card small,
+.track-card span,
+.group-row small,
+.soon-alert span,
+.soon-alert small {
+  color: #bbbbbb;
+  letter-spacing: 1.5px;
+}
+
+.topbar {
+  min-height: 64px;
+}
+
+.topbar a,
+.topbar-action,
+.auth-tabs button,
+.primary-auth,
+.google-auth,
+.guest-auth,
+.filter-tabs button,
+.assistant-row button,
+.prediction-form button,
+.shot-controls button {
+  border: 1px solid #ffffff;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: none;
+}
+
+.auth-tabs button.is-active,
+.primary-auth,
+.filter-tabs button.is-active,
+.assistant-row button,
+.prediction-form button,
+.shot-controls button {
+  background: #000;
+  color: #fff;
+}
+
+.google-auth {
+  background: #ffffff;
+  color: #000000;
+}
+
+.guest-auth,
+.topbar-action {
+  background: #1a1a1a;
+}
+
+.hero__stats div,
+.fixture-button,
+.source-line,
+.detail-grid div,
+.model-lines span,
+.group-card,
+.prediction-form input,
+.assistant-row input,
+.auth-box input {
+  border-color: var(--line);
+  border-radius: 0;
+  background: #0d0d0d;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+.fixture-button.is-active {
+  border-color: #ffffff;
+  background: #262626;
+}
+
+.hero__stats div:nth-child(1),
+.hero__stats div:nth-child(2),
+.hero__stats div:nth-child(3) {
+  border-color: var(--line);
+}
+
+.hero__stats div:nth-child(1)::after,
+.hero__stats div:nth-child(2)::after,
+.hero__stats div:nth-child(3)::after {
+  content: "";
+  display: block;
+  height: 4px;
+  margin-top: 12px;
+  background: linear-gradient(90deg, var(--m-blue-light) 0 33%, var(--m-blue-dark) 33% 66%, var(--m-red) 66% 100%);
+}
+
+.score-backdrop,
+.model-pick,
+.soon-alert,
+.upset-card {
+  border-color: var(--line);
+  border-radius: 0;
+  background: #0d0d0d;
+  color: #ffffff;
+}
+
+.probability-row {
+  border-radius: 0;
+  background: #0d0d0d;
+}
+
+.probability-row div:nth-child(1) {
+  background: var(--m-blue-light);
+}
+
+.probability-row div:nth-child(2) {
+  background: var(--m-blue-dark);
+}
+
+.probability-row div:nth-child(3) {
+  background: var(--m-red);
+}
+
+.team-side small,
+.track-card strong,
+.leader-row strong {
+  color: #ffffff;
+}
+
+.pick-center strong {
+  color: var(--m-red);
+}
+
+.goal-box,
+.group-heading,
+.group-row {
+  border-radius: 0;
+}
+
+/* Light motorsport theme */
+:root {
+  --bg: #fbfcfd;
+  --surface: #ffffff;
+  --surface-2: #f6f8fa;
+  --ink: #17212b;
+  --muted: #7b8790;
+  --line: #e6ebef;
+}
+
+body {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+  color: var(--ink);
+}
+
+.start-screen,
+.hero {
+  background-color: #fbfcfd;
+}
+
+.start-copy,
+.auth-box,
+.fixture-list,
+.match-board,
+.side-panel > *,
+.group-card,
+.mini-game,
+.match-assistant,
+.match-details,
+.my-prediction,
+.ai-summary,
+.model-card,
+.team-side,
+.pick-center {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.start-copy,
+.hero__content,
+.topbar,
+.start-copy h1,
+.hero h1,
+.section-title h2,
+.match-header h2,
+.mini-game h2 {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+.start-copy p:not(.eyebrow),
+.hero__copy,
+.ai-summary p,
+.match-assistant > p,
+.track-card p {
+  color: #34424a;
+}
+
+.eyebrow {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--m-blue-dark);
+}
+
+.hero__stats div,
+.fixture-button,
+.source-line,
+.detail-grid div,
+.model-lines span,
+.prediction-form input,
+.assistant-row input,
+.auth-box input {
+  border-color: var(--line);
+  background: #fbfcfd;
+  color: var(--ink);
+}
+
+.fixture-button.is-active {
+  border-color: var(--m-blue-dark);
+  background: #f2f8ff;
+}
+
+.topbar a,
+.topbar-action,
+.auth-tabs button,
+.primary-auth,
+.google-auth,
+.guest-auth,
+.filter-tabs button,
+.assistant-row button,
+.prediction-form button,
+.shot-controls button {
+  border-color: #111418;
+  background: #ffffff;
+  color: #111418;
+}
+
+.auth-tabs button.is-active,
+.primary-auth,
+.filter-tabs button.is-active,
+.assistant-row button,
+.prediction-form button,
+.shot-controls button {
+  background: #111418;
+  color: #ffffff;
+}
+
+.guest-auth,
+.topbar-action {
+  background: #f7f9fb;
+  color: #111418;
+}
+
+.google-auth {
+  background: #ffffff;
+  color: #111418;
+}
+
+.hero__stats span,
+.soon-alert strong,
+.fixture-button strong,
+.team-side strong,
+.model-card strong,
+.track-card strong,
+.detail-grid strong,
+.leader-row strong {
+  color: var(--ink);
+}
+
+.hero__stats small,
+.section-title p,
+.fixture-button span,
+.fixture-button small,
+.match-header p,
+.team-side span,
+.pick-center span,
+.model-card span,
+.model-card small,
+.track-card span,
+.track-card p,
+.group-row small,
+.soon-alert span,
+.soon-alert small,
+.ai-summary span,
+.ai-summary small {
+  color: var(--muted);
+}
+
+.score-backdrop,
+.model-pick,
+.soon-alert,
+.upset-card {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.pick-center strong {
+  color: var(--m-red);
+}
+
+.probability-row {
+  background: #f2f5f7;
+}
+
+.start-features span {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--ink);
+}
+
+.goal-box {
+  border-color: #ffffff;
+}
+
+/* Requested contrast tweaks */
+.start-screen {
+  background-color: #0f252d;
+}
+
+.start-copy,
+.auth-box {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(15, 37, 45, 0.72);
+  color: #ffffff;
+}
+
+.start-copy h1 {
+  color: #ffffff !important;
+  text-shadow: 0 14px 36px rgba(0, 0, 0, 0.38);
+}
+
+.start-copy p:not(.eyebrow) {
+  color: #d6e3e1;
+}
+
+.auth-box label {
+  color: #ffffff;
+}
+
+.auth-tabs button,
+.guest-auth {
+  border-color: rgba(255, 255, 255, 0.46);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.dashboard,
+.mini-game {
+  position: relative;
+}
+
+.app-shell::after {
+  content: "";
+  display: block;
+  height: 160px;
+  margin-top: -120px;
+  background: linear-gradient(180deg, rgba(251, 252, 253, 0), #102a33 72%);
+  pointer-events: none;
+}
+
+.mini-game {
+  background: #102a33;
+  color: #ffffff;
+}
+
+.mini-game .section-title h2,
+.mini-game .game-status strong {
+  color: #ffffff;
+}
+
+.mini-game .section-title p,
+.mini-game .game-status span {
+  color: #b9c7c9;
+}
+
+.hero h1,
+.hero__copy {
+  color: #ffffff !important;
+}
+
+body[data-theme="dark"] {
+  --bg: #000000;
+  --surface: #1a1a1a;
+  --surface-2: #262626;
+  --ink: #ffffff;
+  --muted: #a5adb4;
+  --line: #3c3c3c;
+  background: #000000;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .start-screen,
+body[data-theme="dark"] .hero {
+  background-color: #000000;
+}
+
+body[data-theme="dark"] .start-copy,
+body[data-theme="dark"] .auth-box,
+body[data-theme="dark"] .fixture-list,
+body[data-theme="dark"] .match-board,
+body[data-theme="dark"] .side-panel > *,
+body[data-theme="dark"] .group-card,
+body[data-theme="dark"] .mini-game,
+body[data-theme="dark"] .match-assistant,
+body[data-theme="dark"] .match-details,
+body[data-theme="dark"] .my-prediction,
+body[data-theme="dark"] .ai-summary,
+body[data-theme="dark"] .model-card,
+body[data-theme="dark"] .team-side,
+body[data-theme="dark"] .pick-center {
+  border-color: #3c3c3c;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .hero__stats div,
+body[data-theme="dark"] .fixture-button,
+body[data-theme="dark"] .source-line,
+body[data-theme="dark"] .detail-grid div,
+body[data-theme="dark"] .model-lines span,
+body[data-theme="dark"] .prediction-form input,
+body[data-theme="dark"] .assistant-row input,
+body[data-theme="dark"] .auth-box input {
+  border-color: #3c3c3c;
+  background: #0d0d0d;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .fixture-button.is-active {
+  background: #262626;
+}
+
+body[data-theme="dark"] .start-copy p:not(.eyebrow),
+body[data-theme="dark"] .ai-summary p,
+body[data-theme="dark"] .match-assistant > p,
+body[data-theme="dark"] .track-card p {
+  color: #bbbbbb;
+}
+
+body[data-theme="dark"] .topbar a,
+body[data-theme="dark"] .topbar-action,
+body[data-theme="dark"] .auth-tabs button,
+body[data-theme="dark"] .guest-auth,
+body[data-theme="dark"] .filter-tabs button {
+  border-color: #ffffff;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .auth-tabs button.is-active,
+body[data-theme="dark"] .primary-auth,
+body[data-theme="dark"] .filter-tabs button.is-active,
+body[data-theme="dark"] .assistant-row button,
+body[data-theme="dark"] .prediction-form button,
+body[data-theme="dark"] .shot-controls button {
+  background: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="dark"] .google-auth {
+  background: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="dark"] .score-backdrop,
+body[data-theme="dark"] .model-pick,
+body[data-theme="dark"] .soon-alert,
+body[data-theme="dark"] .upset-card {
+  border-color: #3c3c3c;
+  background: #0d0d0d;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .app-shell::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), #000000 72%);
+}
+
+.theme-site {
+  width: min(1200px, calc(100% - 36px));
+  margin: 0 auto 28px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.theme-card {
+  min-height: 170px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+}
+
+.theme-card span,
+.theme-card small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.theme-card strong {
+  display: block;
+  margin: 42px 0 8px;
+  color: inherit;
+  font-size: 24px;
+  line-height: 1.05;
+}
+
+.theme-card-light {
+  background: linear-gradient(135deg, #ffffff 0%, #eef4f7 58%, #dbe8ee 100%);
+  color: #111418;
+}
+
+.theme-card-dark {
+  background: linear-gradient(135deg, #000000 0%, #161616 58%, #2c2c2c 100%);
+  color: #ffffff;
+}
+
+.theme-card-dark span,
+.theme-card-dark small {
+  color: #c6cbd0;
+}
+
+.theme-card.is-active {
+  border-color: var(--m-blue);
+  box-shadow: 0 0 0 3px rgba(29, 113, 184, 0.18);
+}
+
+body[data-theme="dark"] .theme-site {
+  border-color: #3c3c3c;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .theme-card {
+  border-color: #3c3c3c;
+}
+
+body[data-theme="dark"] .theme-card.is-active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.16);
+}
+
+@media (max-width: 720px) {
+  .theme-site {
+    width: min(100% - 28px, 1200px);
+    padding: 16px;
+  }
+
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+body[data-theme="lamborghini"] {
+  --bg: #000000;
+  --surface: #181818;
+  --surface-2: #202020;
+  --ink: #ffffff;
+  --muted: #969696;
+  --line: #313131;
+  --m-blue: #ffc000;
+  --m-red: #ffc000;
+  --cyan: #ffce3e;
+  --green: #ffc000;
+  background: #000000;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+body[data-theme="lamborghini"] .hero {
+  background-color: #000000;
+}
+
+body[data-theme="lamborghini"] .topbar a,
+body[data-theme="lamborghini"] .topbar-action {
+  border-color: rgba(255, 255, 255, 0.48);
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+}
+
+body[data-theme="lamborghini"] .topbar-action:hover,
+body[data-theme="lamborghini"] .topbar a:hover {
+  border-color: #ffc000;
+  color: #ffc000;
+}
+
+body[data-theme="lamborghini"] .eyebrow,
+body[data-theme="lamborghini"] .status-pill,
+body[data-theme="lamborghini"] .source-line a,
+body[data-theme="lamborghini"] .model-pick,
+body[data-theme="lamborghini"] .score-backdrop {
+  border-color: #ffc000;
+  border-radius: 0;
+  background: #ffc000;
+  color: #000000;
+}
+
+body[data-theme="lamborghini"] .fixture-list,
+body[data-theme="lamborghini"] .match-board,
+body[data-theme="lamborghini"] .side-panel > *,
+body[data-theme="lamborghini"] .group-card,
+body[data-theme="lamborghini"] .mini-game,
+body[data-theme="lamborghini"] .match-assistant,
+body[data-theme="lamborghini"] .match-details,
+body[data-theme="lamborghini"] .my-prediction,
+body[data-theme="lamborghini"] .ai-summary,
+body[data-theme="lamborghini"] .model-card,
+body[data-theme="lamborghini"] .team-side,
+body[data-theme="lamborghini"] .pick-center {
+  border-color: #202020;
+  border-radius: 0;
+  background: #181818;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+body[data-theme="lamborghini"] .hero__stats div,
+body[data-theme="lamborghini"] .fixture-button,
+body[data-theme="lamborghini"] .source-line,
+body[data-theme="lamborghini"] .detail-grid div,
+body[data-theme="lamborghini"] .model-lines span,
+body[data-theme="lamborghini"] .prediction-form input,
+body[data-theme="lamborghini"] .assistant-row input,
+body[data-theme="lamborghini"] .auth-box input {
+  border-color: #313131;
+  border-radius: 0;
+  background: #000000;
+  color: #ffffff;
+}
+
+body[data-theme="lamborghini"] .fixture-button.is-active {
+  border-color: #ffc000;
+  background: #202020;
+}
+
+body[data-theme="lamborghini"] .auth-tabs button.is-active,
+body[data-theme="lamborghini"] .primary-auth,
+body[data-theme="lamborghini"] .filter-tabs button.is-active,
+body[data-theme="lamborghini"] .assistant-row button,
+body[data-theme="lamborghini"] .prediction-form button,
+body[data-theme="lamborghini"] .shot-controls button {
+  border-radius: 0;
+  background: #ffc000;
+  color: #000000;
+}
+
+body[data-theme="lamborghini"] .google-auth,
+body[data-theme="lamborghini"] .guest-auth,
+body[data-theme="lamborghini"] .filter-tabs button,
+body[data-theme="lamborghini"] .auth-tabs button {
+  border-color: #494949;
+  border-radius: 0;
+  background: #202020;
+  color: #ffffff;
+}
+
+body[data-theme="lamborghini"] .start-copy p:not(.eyebrow),
+body[data-theme="lamborghini"] .ai-summary p,
+body[data-theme="lamborghini"] .match-assistant > p,
+body[data-theme="lamborghini"] .track-card p,
+body[data-theme="lamborghini"] .section-title p,
+body[data-theme="lamborghini"] .fixture-button span,
+body[data-theme="lamborghini"] .fixture-button small,
+body[data-theme="lamborghini"] .match-header p,
+body[data-theme="lamborghini"] .match-header > span,
+body[data-theme="lamborghini"] .model-card span,
+body[data-theme="lamborghini"] .model-card small,
+body[data-theme="lamborghini"] .track-card span,
+body[data-theme="lamborghini"] .group-row small {
+  color: #969696;
+}
+
+body[data-theme="lamborghini"] .section-title h2,
+body[data-theme="lamborghini"] .match-header h2,
+body[data-theme="lamborghini"] .mini-game h2,
+body[data-theme="lamborghini"] .team-side strong,
+body[data-theme="lamborghini"] .fixture-button strong,
+body[data-theme="lamborghini"] .track-card strong,
+body[data-theme="lamborghini"] .detail-grid strong,
+body[data-theme="lamborghini"] .model-card strong,
+body[data-theme="lamborghini"] .pick-center strong {
+  color: #ffffff !important;
+}
+
+body[data-theme="lamborghini"] .app-shell::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), #000000 72%);
+}
+
+body[data-theme="bugatti"] {
+  --bg: #000000;
+  --surface: #0d0d0d;
+  --surface-2: #141414;
+  --ink: #ffffff;
+  --muted: #999999;
+  --line: #262626;
+  --m-blue: #ffffff;
+  --m-red: #cccccc;
+  --cyan: #c3d9f3;
+  --green: #ffffff;
+  background: #000000;
+  color: #ffffff;
+}
+
+body[data-theme="bugatti"] .app-shell,
+body[data-theme="bugatti"] .hero {
+  background-color: #000000;
+}
+
+body[data-theme="bugatti"] .topbar strong,
+body[data-theme="bugatti"] .section-title h2,
+body[data-theme="bugatti"] .match-header h2,
+body[data-theme="bugatti"] .mini-game h2,
+body[data-theme="bugatti"] .team-side strong,
+body[data-theme="bugatti"] .fixture-button strong,
+body[data-theme="bugatti"] .track-card strong,
+body[data-theme="bugatti"] .detail-grid strong,
+body[data-theme="bugatti"] .model-card strong,
+body[data-theme="bugatti"] .pick-center strong {
+  color: #ffffff !important;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+body[data-theme="bugatti"] .topbar a,
+body[data-theme="bugatti"] .topbar-action,
+body[data-theme="bugatti"] .filter-tabs button,
+body[data-theme="bugatti"] .auth-tabs button,
+body[data-theme="bugatti"] .guest-auth,
+body[data-theme="bugatti"] .google-auth {
+  border-color: #262626;
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+body[data-theme="bugatti"] .topbar a:hover,
+body[data-theme="bugatti"] .topbar-action:hover,
+body[data-theme="bugatti"] .filter-tabs button.is-active,
+body[data-theme="bugatti"] .auth-tabs button.is-active {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="bugatti"] .fixture-list,
+body[data-theme="bugatti"] .match-board,
+body[data-theme="bugatti"] .side-panel > *,
+body[data-theme="bugatti"] .group-card,
+body[data-theme="bugatti"] .mini-game,
+body[data-theme="bugatti"] .match-assistant,
+body[data-theme="bugatti"] .match-details,
+body[data-theme="bugatti"] .my-prediction,
+body[data-theme="bugatti"] .ai-summary,
+body[data-theme="bugatti"] .model-card,
+body[data-theme="bugatti"] .team-side,
+body[data-theme="bugatti"] .pick-center {
+  border-color: #262626;
+  border-radius: 0;
+  background: #0d0d0d;
+  color: #ffffff;
+  box-shadow: none;
+}
+
+body[data-theme="bugatti"] .hero__stats div,
+body[data-theme="bugatti"] .fixture-button,
+body[data-theme="bugatti"] .source-line,
+body[data-theme="bugatti"] .detail-grid div,
+body[data-theme="bugatti"] .model-lines span,
+body[data-theme="bugatti"] .prediction-form input,
+body[data-theme="bugatti"] .assistant-row input,
+body[data-theme="bugatti"] .auth-box input {
+  border-color: #262626;
+  border-radius: 0;
+  background: #000000;
+  color: #ffffff;
+}
+
+body[data-theme="bugatti"] .fixture-button.is-active,
+body[data-theme="bugatti"] .model-pick,
+body[data-theme="bugatti"] .score-backdrop,
+body[data-theme="bugatti"] .status-pill,
+body[data-theme="bugatti"] .eyebrow {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="bugatti"] .primary-auth,
+body[data-theme="bugatti"] .assistant-row button,
+body[data-theme="bugatti"] .prediction-form button,
+body[data-theme="bugatti"] .shot-controls button,
+body[data-theme="bugatti"] .source-line a {
+  border-radius: 999px;
+  background: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="bugatti"] .start-copy p:not(.eyebrow),
+body[data-theme="bugatti"] .ai-summary p,
+body[data-theme="bugatti"] .match-assistant > p,
+body[data-theme="bugatti"] .track-card p,
+body[data-theme="bugatti"] .section-title p,
+body[data-theme="bugatti"] .fixture-button span,
+body[data-theme="bugatti"] .fixture-button small,
+body[data-theme="bugatti"] .match-header p,
+body[data-theme="bugatti"] .match-header > span,
+body[data-theme="bugatti"] .model-card span,
+body[data-theme="bugatti"] .model-card small,
+body[data-theme="bugatti"] .track-card span,
+body[data-theme="bugatti"] .group-row small {
+  color: #999999;
+  letter-spacing: 1px;
+}
+
+body[data-theme="bugatti"] .app-shell::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), #000000 72%);
+}
+
+body[data-theme="light"],
+body:not([data-theme]),
+body[data-theme=""] {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body[data-theme="dark"] {
+  font-family: "Trebuchet MS", "Segoe UI", Arial, sans-serif;
+}
+
+body[data-theme="lamborghini"] {
+  font-family: "Arial Narrow", "Arial Black", Impact, Arial, sans-serif;
+}
+
+body[data-theme="lamborghini"] .hero h1,
+body[data-theme="lamborghini"] .start-copy h1,
+body[data-theme="lamborghini"] .section-title h2,
+body[data-theme="lamborghini"] .match-header h2,
+body[data-theme="lamborghini"] .mini-game h2,
+body[data-theme="lamborghini"] .topbar strong {
+  font-family: Impact, "Arial Black", "Arial Narrow", Arial, sans-serif;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+body[data-theme="bugatti"] {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+body[data-theme="bugatti"] .hero h1,
+body[data-theme="bugatti"] .start-copy h1,
+body[data-theme="bugatti"] .section-title h2,
+body[data-theme="bugatti"] .match-header h2,
+body[data-theme="bugatti"] .mini-game h2,
+body[data-theme="bugatti"] .topbar strong {
+  font-family: "Times New Roman", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+body[data-theme="bugatti"] button,
+body[data-theme="bugatti"] .topbar a,
+body[data-theme="bugatti"] .eyebrow,
+body[data-theme="bugatti"] .status-pill,
+body[data-theme="bugatti"] .fixture-button span,
+body[data-theme="bugatti"] .fixture-button small,
+body[data-theme="bugatti"] .model-lines span {
+  font-family: "Courier New", ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+body[data-theme="light"],
+body:not([data-theme]),
+body[data-theme=""] {
+  --m-blue-light: #6f7a83;
+  --m-blue-dark: #8b969f;
+  --m-red: #aeb6bd;
+  --m-blue: #5f6b75;
+}
+
+body[data-theme="dark"] {
+  --m-blue-light: #555555;
+  --m-blue-dark: #777777;
+  --m-red: #999999;
+  --m-blue: #ffffff;
+}
+
+body[data-theme="light"] .fixture-button.is-active,
+body:not([data-theme]) .fixture-button.is-active,
+body[data-theme=""] .fixture-button.is-active {
+  border-color: #5f6b75;
+  background: #eef2f5;
+}
+
+body[data-theme="bmw-m"] {
+  --bg: #fbfcfd;
+  --surface: #ffffff;
+  --surface-2: #f6f8fa;
+  --ink: #17212b;
+  --muted: #7b8790;
+  --line: #e6ebef;
+  --m-blue-light: #0066b1;
+  --m-blue-dark: #1c69d4;
+  --m-blue: #1c69d4;
+  --m-red: #e22718;
+  --cyan: #1c69d4;
+  --green: #0066b1;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafb 100%);
+  color: var(--ink);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+}
+
+body[data-theme="bmw-m"] .start-screen,
+body[data-theme="bmw-m"] .hero {
+  background-color: #fbfcfd;
+}
+
+body[data-theme="bmw-m"] .fixture-list,
+body[data-theme="bmw-m"] .match-board,
+body[data-theme="bmw-m"] .side-panel > *,
+body[data-theme="bmw-m"] .group-card,
+body[data-theme="bmw-m"] .mini-game,
+body[data-theme="bmw-m"] .match-assistant,
+body[data-theme="bmw-m"] .match-details,
+body[data-theme="bmw-m"] .my-prediction,
+body[data-theme="bmw-m"] .ai-summary,
+body[data-theme="bmw-m"] .model-card,
+body[data-theme="bmw-m"] .team-side,
+body[data-theme="bmw-m"] .pick-center {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--ink);
+}
+
+body[data-theme="bmw-m"] .topbar a,
+body[data-theme="bmw-m"] .topbar-action,
+body[data-theme="bmw-m"] .auth-tabs button,
+body[data-theme="bmw-m"] .primary-auth,
+body[data-theme="bmw-m"] .google-auth,
+body[data-theme="bmw-m"] .guest-auth,
+body[data-theme="bmw-m"] .filter-tabs button {
+  border-color: #d9e2e8;
+  background: #f7f9fb;
+  color: #111418;
+}
+
+body[data-theme="bmw-m"] .fixture-button.is-active,
+body[data-theme="bmw-m"] .filter-tabs button.is-active,
+body[data-theme="bmw-m"] .auth-tabs button.is-active,
+body[data-theme="bmw-m"] .primary-auth,
+body[data-theme="bmw-m"] .assistant-row button,
+body[data-theme="bmw-m"] .prediction-form button,
+body[data-theme="bmw-m"] .shot-controls button {
+  border-color: var(--m-blue-dark);
+  background: #f2f8ff;
+  color: #111418;
+}
+
+body[data-theme="bmw-m"] .section-title h2,
+body[data-theme="bmw-m"] .match-header h2,
+body[data-theme="bmw-m"] .mini-game h2,
+body[data-theme="bmw-m"] .team-side strong,
+body[data-theme="bmw-m"] .fixture-button strong,
+body[data-theme="bmw-m"] .track-card strong,
+body[data-theme="bmw-m"] .detail-grid strong,
+body[data-theme="bmw-m"] .model-card strong,
+body[data-theme="bmw-m"] .pick-center strong {
+  color: var(--ink) !important;
+}
+
+body[data-theme="bmw-m"] .score-backdrop,
+body[data-theme="bmw-m"] .model-pick,
+body[data-theme="bmw-m"] .soon-alert,
+body[data-theme="bmw-m"] .upset-card {
+  border-color: var(--line);
+  background: #ffffff;
+  color: var(--m-blue-dark);
 }

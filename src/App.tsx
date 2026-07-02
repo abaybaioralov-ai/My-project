@@ -6,11 +6,18 @@ import {
   type WorldCupPrediction,
 } from './lib/worldCupPredictions';
 import { supabase, supabaseAnonKey, supabaseUrl } from './lib/supabase';
+import {
+  loadUserPrediction,
+  saveUserPrediction,
+  type UserMatchPrediction,
+} from './lib/userMatchPredictions';
 
 type Aim = 'left' | 'center' | 'right';
 type AccessMode = 'guest' | 'user' | null;
 type AuthMode = 'signin' | 'signup';
 type MatchFilter = 'all' | 'live' | 'high' | 'upset';
+type ThemeMode = 'light' | 'dark' | 'bmw-m' | 'lamborghini' | 'bugatti';
+type GameDifficulty = 'easy' | 'normal' | 'hard';
 type GroupStanding = {
   group: string;
   teams: Array<{
@@ -162,6 +169,19 @@ function formatMatchDate(value: string) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value));
+}
+
+function getHoursUntil(value: string) {
+  return (new Date(value).getTime() - Date.now()) / 36e5;
+}
+
+function getSoonMatch(predictions: WorldCupPrediction[]) {
+  return predictions
+    .filter((prediction) => {
+      const hours = getHoursUntil(prediction.matchTime);
+      return hours >= 0 && hours <= 24;
+    })
+    .sort((a, b) => new Date(a.matchTime).getTime() - new Date(b.matchTime).getTime())[0];
 }
 
 function isUpsetCandidate(prediction: WorldCupPrediction) {
@@ -383,9 +403,144 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
   );
 }
 
+function MatchDetails({ prediction }: { prediction: WorldCupPrediction }) {
+  const modelAgreement = prediction.modelBreakdown.filter((model) => model.pick === prediction.consensusPick).length;
+
+  return (
+    <section className="match-details" aria-label="Match details">
+      <div className="section-title compact">
+        <div>
+          <p>Match page</p>
+          <h2>Details</h2>
+        </div>
+        <span>{prediction.stage}</span>
+      </div>
+      <div className="detail-grid">
+        <div>
+          <span>Venue</span>
+          <strong>{prediction.venue}</strong>
+        </div>
+        <div>
+          <span>Kickoff</span>
+          <strong>{formatMatchDate(prediction.matchTime)}</strong>
+        </div>
+        <div>
+          <span>Models agree</span>
+          <strong>{modelAgreement}/{prediction.modelBreakdown.length}</strong>
+        </div>
+        <div>
+          <span>Status</span>
+          <strong>{prediction.status}</strong>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MyPredictionBox({
+  accessMode,
+  prediction,
+}: {
+  accessMode: Exclude<AccessMode, null>;
+  prediction: WorldCupPrediction;
+}) {
+  const [score, setScore] = useState('');
+  const [note, setNote] = useState('');
+  const [savedPrediction, setSavedPrediction] = useState<UserMatchPrediction | null>(null);
+  const [message, setMessage] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setMessage('');
+    setScore('');
+    setNote('');
+    setSavedPrediction(null);
+
+    if (accessMode === 'guest') {
+      const raw = window.localStorage.getItem(`guest-prediction:${prediction.id}`);
+      if (raw) {
+        const parsed = JSON.parse(raw) as UserMatchPrediction;
+        setSavedPrediction(parsed);
+        setScore(parsed.predictedScore);
+        setNote(parsed.note);
+      }
+      return;
+    }
+
+    void loadUserPrediction(prediction.id)
+      .then((loaded) => {
+        if (loaded) {
+          setSavedPrediction(loaded);
+          setScore(loaded.predictedScore);
+          setNote(loaded.note);
+        }
+      })
+      .catch(() => setMessage('Could not load your saved prediction.'));
+  }, [accessMode, prediction]);
+
+  async function handleSave(event: FormEvent) {
+    event.preventDefault();
+    setIsSaving(true);
+    setMessage('');
+
+    try {
+      if (accessMode === 'guest') {
+        const localPrediction: UserMatchPrediction = {
+          matchId: prediction.id,
+          predictedScore: score,
+          note,
+          updatedAt: new Date().toISOString(),
+        };
+        window.localStorage.setItem(`guest-prediction:${prediction.id}`, JSON.stringify(localPrediction));
+        setSavedPrediction(localPrediction);
+        setMessage('Saved on this device as guest.');
+      } else {
+        const saved = await saveUserPrediction(prediction.id, score, note);
+        setSavedPrediction(saved);
+        setMessage('Saved to your account.');
+      }
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Could not save prediction.');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <section className="my-prediction">
+      <div className="section-title compact">
+        <div>
+          <p>My prediction</p>
+          <h2>Your score</h2>
+        </div>
+        {savedPrediction && <span>{savedPrediction.predictedScore}</span>}
+      </div>
+      <form className="prediction-form" onSubmit={handleSave}>
+        <input
+          onChange={(event) => setScore(event.target.value)}
+          pattern="^[0-9]{1,2}-[0-9]{1,2}$"
+          placeholder="2-1"
+          required
+          value={score}
+        />
+        <input
+          onChange={(event) => setNote(event.target.value)}
+          placeholder="Short note"
+          value={note}
+        />
+        <button disabled={isSaving} type="submit">
+          {isSaving ? 'Saving' : 'Save'}
+        </button>
+      </form>
+      {message && <p>{message}</p>}
+    </section>
+  );
+}
+
 function PenaltyGame() {
   const directions: Aim[] = ['left', 'center', 'right'];
   const resetTimer = useRef<number | null>(null);
+  const audioContext = useRef<AudioContext | null>(null);
   const [shots, setShots] = useState(0);
   const [goals, setGoals] = useState(0);
   const [keeper, setKeeper] = useState<Aim>('center');
@@ -393,6 +548,8 @@ function PenaltyGame() {
   const [shotState, setShotState] = useState<'ready' | 'goal' | 'saved'>('ready');
   const [message, setMessage] = useState('Choose a corner and take the shot.');
   const [isAutoRestarting, setIsAutoRestarting] = useState(false);
+  const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
+  const [soundEnabled, setSoundEnabled] = useState(true);
 
   useEffect(() => () => {
     if (resetTimer.current) {
@@ -414,14 +571,57 @@ function PenaltyGame() {
     setBall(directionFromPointer(event.clientX, event.currentTarget));
   }
 
+  function chooseKeeperMove(direction: Aim): Aim {
+    const roll = Math.random();
+
+    if (difficulty === 'easy' && roll < 0.62) {
+      return directions.filter((item) => item !== direction)[Math.floor(Math.random() * 2)];
+    }
+
+    if (difficulty === 'hard' && roll < 0.58) {
+      return direction;
+    }
+
+    return directions[Math.floor(Math.random() * directions.length)];
+  }
+
+  function playTone(type: 'kick' | 'goal' | 'save') {
+    if (!soundEnabled) return;
+
+    const AudioContextConstructor = window.AudioContext
+      ?? (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!AudioContextConstructor) return;
+
+    const context = audioContext.current ?? new AudioContextConstructor();
+    audioContext.current = context;
+
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const now = context.currentTime;
+    const frequency = type === 'goal' ? 720 : type === 'save' ? 190 : 360;
+
+    oscillator.type = type === 'goal' ? 'triangle' : 'sine';
+    oscillator.frequency.setValueAtTime(frequency, now);
+    oscillator.frequency.exponentialRampToValueAtTime(type === 'goal' ? 980 : 120, now + 0.16);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(type === 'kick' ? 0.12 : 0.18, now + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.2);
+  }
+
   function shoot(direction = ball) {
     if (shots >= 5 || shotState !== 'ready') return;
 
-    const keeperMove = directions[Math.floor(Math.random() * directions.length)];
+    const keeperMove = chooseKeeperMove(direction);
     const scored = direction !== keeperMove;
     const nextShots = shots + 1;
     const nextGoals = goals + (scored ? 1 : 0);
 
+    playTone('kick');
+    window.setTimeout(() => playTone(scored ? 'goal' : 'save'), 120);
     setBall(direction);
     setKeeper(keeperMove);
     setShotState(scored ? 'goal' : 'saved');
@@ -474,7 +674,25 @@ function PenaltyGame() {
           <p>Mini game</p>
           <h2>Penalty shootout</h2>
         </div>
-        <span>{goals}/5 goals</span>
+        <span className={shotState === 'goal' ? 'score-pop' : ''}>{goals}/5 goals</span>
+      </div>
+
+      <div className="game-options" aria-label="Penalty settings">
+        <div className="difficulty-tabs">
+          {(['easy', 'normal', 'hard'] as GameDifficulty[]).map((level) => (
+            <button
+              className={difficulty === level ? 'is-active' : ''}
+              onClick={() => setDifficulty(level)}
+              type="button"
+              key={level}
+            >
+              {level}
+            </button>
+          ))}
+        </div>
+        <button className="sound-toggle" onClick={() => setSoundEnabled((enabled) => !enabled)} type="button">
+          Sound {soundEnabled ? 'On' : 'Off'}
+        </button>
       </div>
 
       <div
@@ -484,6 +702,11 @@ function PenaltyGame() {
         role="button"
         tabIndex={0}
       >
+        <div className="goal-frame" aria-hidden="true">
+          <span className="goal-post goal-post-left" />
+          <span className="goal-post goal-post-right" />
+          <span className="goal-crossbar" />
+        </div>
         <div className="net" />
         <div className={`keeper keeper-${keeper}`}>
           <span className="keeper-head" />
@@ -492,6 +715,14 @@ function PenaltyGame() {
           <span className="keeper-arm keeper-arm-right" />
         </div>
         <div className={`shot-trail trail-${ball}`} />
+        <div className={`striker striker-${ball} striker-${shotState}`} aria-hidden="true">
+          <span className="striker-head" />
+          <span className="striker-body" />
+          <span className="striker-arm striker-arm-left" />
+          <span className="striker-arm striker-arm-right" />
+          <span className="striker-leg striker-leg-left" />
+          <span className="striker-leg striker-leg-right" />
+        </div>
         <div className={`ball ball-${ball}`} />
       </div>
 
@@ -520,6 +751,12 @@ function PenaltyGame() {
 
 function App() {
   const [accessMode, setAccessMode] = useState<AccessMode>(null);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const savedTheme = window.localStorage.getItem('theme-mode');
+    return savedTheme === 'dark' || savedTheme === 'bmw-m' || savedTheme === 'lamborghini' || savedTheme === 'bugatti'
+      ? savedTheme
+      : 'light';
+  });
   const [predictions, setPredictions] = useState<WorldCupPrediction[]>(fallbackPredictions);
   const [selectedId, setSelectedId] = useState(fallbackPredictions[0].id);
   const [isLive, setIsLive] = useState(false);
@@ -551,6 +788,11 @@ function App() {
   }, []);
 
   useEffect(() => {
+    document.body.dataset.theme = themeMode;
+    window.localStorage.setItem('theme-mode', themeMode);
+  }, [themeMode]);
+
+  useEffect(() => {
     void refreshPredictions();
     return subscribeToPredictions(() => {
       void refreshPredictions();
@@ -572,6 +814,7 @@ function App() {
     .filter((prediction) => prediction.consensusPick !== 'TBD')
     .sort((a, b) => a.confidence - b.confidence)[0] ?? predictions[0];
   const groups = groupStandings.filter((group) => ['A', 'E', 'I', 'L'].includes(group.group));
+  const soonMatch = getSoonMatch(predictions);
 
   if (!accessMode) {
     return <StartScreen onEnter={setAccessMode} />;
@@ -597,8 +840,17 @@ function App() {
             <a href="#matches">Live matches</a>
             <a href="#models">AI models</a>
             <a href="#groups">Groups</a>
+            <a href="/profile.html">Profile</a>
+            <a href="/themes.html">Themes</a>
             <button className="topbar-action" onClick={() => setAccessMode(null)} type="button">
               {accessMode === 'guest' ? 'Guest' : 'Account'}
+            </button>
+            <button
+              className="topbar-action"
+              onClick={() => setThemeMode((current) => current === 'light' ? 'dark' : 'light')}
+              type="button"
+            >
+              {themeMode === 'light' ? 'Dark' : 'Light'}
             </button>
           </div>
         </nav>
@@ -626,6 +878,14 @@ function App() {
           </div>
         </div>
       </section>
+
+      {soonMatch && (
+        <section className="soon-alert">
+          <span>Match soon</span>
+          <strong>{soonMatch.homeCode} vs {soonMatch.awayCode}</strong>
+          <small>{formatMatchDate(soonMatch.matchTime)} / AI pick {soonMatch.consensusPick}</small>
+        </section>
+      )}
 
       <section className="dashboard" id="matches">
         <section className="fixture-list" aria-label="Upcoming fixtures">
@@ -743,6 +1003,8 @@ function App() {
             ))}
           </div>
 
+          <MatchDetails prediction={selectedPrediction} />
+          <MyPredictionBox accessMode={accessMode} prediction={selectedPrediction} />
           <MatchAssistant prediction={selectedPrediction} />
         </section>
 
