@@ -82,10 +82,13 @@ function toPrediction(row: PredictionRow): WorldCupPrediction {
 }
 
 export async function loadUpcomingPredictions() {
+  const now = new Date().toISOString();
+
   const { data, error } = await supabase
     .from('world_cup_predictions')
     .select('*')
     .in('status', ['upcoming', 'live'])
+    .gte('match_time', now)
     .order('match_time', { ascending: true });
 
   if (error) {

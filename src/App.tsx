@@ -11,6 +11,10 @@ import {
   saveUserPrediction,
   type UserMatchPrediction,
 } from './lib/userMatchPredictions';
+import {
+  loadInternetContext,
+  type InternetContext,
+} from './lib/internetContext';
 
 type Aim = 'left' | 'center' | 'right';
 type AccessMode = 'guest' | 'user' | null;
@@ -31,7 +35,7 @@ type GroupStanding = {
 const fallbackPredictions: WorldCupPrediction[] = [
   {
     id: 'usa-eng-fallback',
-    matchTime: '2026-07-01T20:00:00Z',
+    matchTime: '2026-07-04T20:00:00Z',
     stage: 'Group B',
     venue: 'New York/New Jersey',
     homeName: 'USA',
@@ -59,7 +63,7 @@ const fallbackPredictions: WorldCupPrediction[] = [
   },
   {
     id: 'bra-sen-fallback',
-    matchTime: '2026-07-01T23:00:00Z',
+    matchTime: '2026-07-04T23:00:00Z',
     stage: 'Group B',
     venue: 'Dallas',
     homeName: 'Brazil',
@@ -175,6 +179,10 @@ function getHoursUntil(value: string) {
   return (new Date(value).getTime() - Date.now()) / 36e5;
 }
 
+function isFutureMatch(prediction: WorldCupPrediction) {
+  return prediction.status === 'live' || new Date(prediction.matchTime).getTime() >= Date.now();
+}
+
 function getSoonMatch(predictions: WorldCupPrediction[]) {
   return predictions
     .filter((prediction) => {
@@ -187,13 +195,6 @@ function getSoonMatch(predictions: WorldCupPrediction[]) {
 function isUpsetCandidate(prediction: WorldCupPrediction) {
   const favoriteEdge = Math.max(prediction.homeWin, prediction.awayWin) - Math.min(prediction.homeWin, prediction.awayWin);
   return prediction.confidence <= 58 || favoriteEdge <= 12 || prediction.draw >= 27;
-}
-
-function localMatchAnswer(prediction: WorldCupPrediction, question: string) {
-  const favorite = prediction.consensusPick;
-  const risk = isUpsetCandidate(prediction) ? 'This is an upset-risk match because the model edge is narrow.' : 'The model sees a clearer favorite here.';
-
-  return `${favorite} is the current AI pick for ${prediction.homeCode} vs ${prediction.awayCode}. Projected score: ${prediction.predictedScore}. ${risk} ${prediction.aiSummary} Question noted: "${question}"`;
 }
 
 function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) => void }) {
@@ -339,32 +340,37 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
 }
 
 function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
-  const [question, setQuestion] = useState('Why is this the AI pick?');
-  const [answer, setAnswer] = useState(prediction.aiSummary);
-  const [isAsking, setIsAsking] = useState(false);
+  const [analysis, setAnalysis] = useState('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
-    setQuestion('Why is this the AI pick?');
-    setAnswer(prediction.aiSummary);
-  }, [prediction]);
+    setAnalysis('');
+  }, [prediction.id]);
 
-  async function askAi() {
-    setIsAsking(true);
+  async function analyzeMatch() {
+    setIsAnalyzing(true);
 
     const prompt = [
+      'You are a football match prediction assistant.',
       `Match: ${prediction.homeName} (${prediction.homeCode}) vs ${prediction.awayName} (${prediction.awayCode})`,
+      `Kickoff: ${prediction.matchTime}`,
+      `Venue: ${prediction.venue}`,
       `Consensus pick: ${prediction.consensusPick}`,
       `Projected score: ${prediction.predictedScore}`,
       `Probabilities: home ${prediction.homeWin}%, draw ${prediction.draw}%, away ${prediction.awayWin}%`,
       `Source summary: ${prediction.aiSummary}`,
-      `Question: ${question}`,
+      `Model confidence: ${prediction.confidence}%`,
+      '',
+      'Give the user a practical decision guide.',
+      'Include: final pick, winning chances, score prediction, risk level, and what could change the prediction.',
+      'Be honest if the prediction is uncertain. Do not invent live injuries, odds, or lineups.',
     ].join('\n');
 
     try {
       const { data, error } = await supabase.functions.invoke<{ text?: string }>('ai', {
         body: {
           prompt,
-          system: 'Explain football match predictions in 2 concise sentences. Do not invent live facts.',
+          system: 'You are a careful football prediction assistant. Use only provided match data unless the prompt includes sourced internet context. Keep the answer concise and decision-focused.',
         },
       });
 
@@ -372,11 +378,20 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
         throw error ?? new Error('No AI answer');
       }
 
-      setAnswer(data.text);
+      setAnalysis(data.text);
     } catch {
-      setAnswer(localMatchAnswer(prediction, question));
+      const risk = isUpsetCandidate(prediction)
+        ? 'Risk level: medium/high because the edge is narrow or confidence is limited.'
+        : 'Risk level: medium/low because the model has a clearer favorite.';
+      setAnalysis([
+        `Final pick: ${prediction.consensusPick}.`,
+        `Winning chances: ${prediction.homeCode} ${prediction.homeWin.toFixed(1)}%, draw ${prediction.draw.toFixed(1)}%, ${prediction.awayCode} ${prediction.awayWin.toFixed(1)}%.`,
+        `Projected score: ${prediction.predictedScore}.`,
+        risk,
+        `Decision note: ${prediction.aiSummary}`,
+      ].join('\n'));
     } finally {
-      setIsAsking(false);
+      setIsAnalyzing(false);
     }
   }
 
@@ -384,21 +399,108 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
     <section className="match-assistant" aria-label="AI match assistant">
       <div className="section-title compact">
         <div>
-          <p>Ask AI</p>
-          <h2>Match explanation</h2>
+          <p>AI assistant</p>
+          <h2>Prediction advisor</h2>
         </div>
-      </div>
-      <div className="assistant-row">
-        <input
-          onChange={(event) => setQuestion(event.target.value)}
-          placeholder="Ask about risk, score, or pick"
-          value={question}
-        />
-        <button disabled={isAsking} onClick={askAi} type="button">
-          {isAsking ? 'Thinking' : 'Ask'}
+        <button disabled={isAnalyzing} onClick={analyzeMatch} type="button">
+          {isAnalyzing ? 'Analyzing' : 'Analyze match'}
         </button>
       </div>
-      <p>{answer}</p>
+
+      <div className="advisor-grid">
+        <div>
+          <span>AI pick</span>
+          <strong>{prediction.consensusPick}</strong>
+        </div>
+        <div>
+          <span>Score</span>
+          <strong>{prediction.predictedScore}</strong>
+        </div>
+        <div>
+          <span>{prediction.homeCode}</span>
+          <strong>{prediction.homeWin.toFixed(1)}%</strong>
+        </div>
+        <div>
+          <span>Draw</span>
+          <strong>{prediction.draw.toFixed(1)}%</strong>
+        </div>
+        <div>
+          <span>{prediction.awayCode}</span>
+          <strong>{prediction.awayWin.toFixed(1)}%</strong>
+        </div>
+        <div>
+          <span>Risk</span>
+          <strong>{isUpsetCandidate(prediction) ? 'High' : 'Normal'}</strong>
+        </div>
+      </div>
+
+      <p className="advisor-text">
+        {analysis || `Press Analyze match to get a full AI decision guide for ${prediction.homeCode} vs ${prediction.awayCode}.`}
+      </p>
+    </section>
+  );
+}
+
+function InternetContextPanel({ prediction }: { prediction: WorldCupPrediction }) {
+  const [context, setContext] = useState<InternetContext | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('Press refresh to pull current web context for this match.');
+
+  useEffect(() => {
+    setContext(null);
+    setMessage('Press refresh to pull current web context for this match.');
+  }, [prediction.id]);
+
+  async function refreshContext() {
+    setIsLoading(true);
+    setMessage('Searching the internet and checking sources...');
+
+    try {
+      const nextContext = await loadInternetContext(prediction);
+      setContext(nextContext);
+      setMessage('Updated with internet-grounded context.');
+    } catch {
+      setContext({
+        text: [
+          `Could not reach the internet context service yet.`,
+          `Use the model probabilities as a baseline: ${prediction.consensusPick} is the AI pick at ${prediction.confidence}% confidence, projected ${prediction.predictedScore}.`,
+          `Check team news, injuries, travel, and confirmed lineups before making a final choice.`,
+        ].join('\n'),
+        sources: [],
+      });
+      setMessage('Internet context is unavailable. Showing local decision checklist.');
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return (
+    <section className="internet-context" aria-label="Internet match context">
+      <div className="section-title compact">
+        <div>
+          <p>Internet check</p>
+          <h2>Decision context</h2>
+        </div>
+        <button disabled={isLoading} onClick={refreshContext} type="button">
+          {isLoading ? 'Searching' : 'Refresh'}
+        </button>
+      </div>
+
+      <p className="context-status">{message}</p>
+      {context && (
+        <>
+          <p className="context-text">{context.text}</p>
+          {context.sources.length > 0 && (
+            <div className="context-sources">
+              {context.sources.map((source) => (
+                <a href={source.url} key={source.url} rel="noreferrer" target="_blank">
+                  {source.title}
+                </a>
+              ))}
+            </div>
+          )}
+        </>
+      )}
     </section>
   );
 }
@@ -765,7 +867,7 @@ function App() {
 
   async function refreshPredictions() {
     try {
-      const nextPredictions = await loadUpcomingPredictions();
+      const nextPredictions = (await loadUpcomingPredictions()).filter(isFutureMatch);
 
       if (nextPredictions.length > 0) {
         setPredictions(nextPredictions);
@@ -799,22 +901,24 @@ function App() {
     });
   }, []);
 
-  const selectedPrediction = predictions.find((prediction) => prediction.id === selectedId) ?? predictions[0];
-  const liveMatches = predictions.filter((prediction) => prediction.status === 'live').length;
-  const visiblePredictions = predictions.filter((prediction) => {
+  const upcomingPredictions = predictions.filter(isFutureMatch);
+  const displayPredictions = upcomingPredictions.length > 0 ? upcomingPredictions : fallbackPredictions.filter(isFutureMatch);
+  const selectedPrediction = displayPredictions.find((prediction) => prediction.id === selectedId) ?? displayPredictions[0];
+  const liveMatches = displayPredictions.filter((prediction) => prediction.status === 'live').length;
+  const visiblePredictions = displayPredictions.filter((prediction) => {
     if (matchFilter === 'live') return prediction.status === 'live';
     if (matchFilter === 'high') return prediction.confidence >= 65;
     if (matchFilter === 'upset') return isUpsetCandidate(prediction);
     return true;
   });
   const averageConfidence = Math.round(
-    predictions.reduce((sum, prediction) => sum + prediction.confidence, 0) / predictions.length,
+    displayPredictions.reduce((sum, prediction) => sum + prediction.confidence, 0) / displayPredictions.length,
   );
-  const upsetAlert = [...predictions]
+  const upsetAlert = [...displayPredictions]
     .filter((prediction) => prediction.consensusPick !== 'TBD')
-    .sort((a, b) => a.confidence - b.confidence)[0] ?? predictions[0];
+    .sort((a, b) => a.confidence - b.confidence)[0] ?? displayPredictions[0];
   const groups = groupStandings.filter((group) => ['A', 'E', 'I', 'L'].includes(group.group));
-  const soonMatch = getSoonMatch(predictions);
+  const soonMatch = getSoonMatch(displayPredictions);
 
   if (!accessMode) {
     return <StartScreen onEnter={setAccessMode} />;
@@ -864,7 +968,7 @@ function App() {
           </p>
           <div className="hero__stats" aria-label="Prediction summary">
             <div>
-              <span>{predictions.length}</span>
+              <span>{displayPredictions.length}</span>
               <small>next matches</small>
             </div>
             <div>
@@ -984,6 +1088,8 @@ function App() {
             </div>
             <small>Updated {formatMatchDate(selectedPrediction.updatedAt)}</small>
           </article>
+
+          <InternetContextPanel prediction={selectedPrediction} />
 
           <div className="model-grid" id="models">
             {selectedPrediction.modelBreakdown.map((model) => (

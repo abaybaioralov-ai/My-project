@@ -738,6 +738,124 @@ p {
   background: rgba(255, 255, 255, 0.56);
 }
 
+.match-assistant .section-title button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--green);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.match-assistant .section-title button:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.advisor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.advisor-grid div {
+  min-height: 78px;
+  padding: 12px;
+  border: 1px solid rgba(20, 49, 58, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.advisor-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.advisor-grid strong {
+  display: block;
+  margin-top: 9px;
+  color: var(--ink);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.advisor-text {
+  margin-top: 12px;
+  white-space: pre-line;
+  color: #2b4549;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.internet-context {
+  margin-top: 14px;
+  padding: 16px;
+  border: 1px solid rgba(20, 49, 58, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.internet-context .section-title button {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--green);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.internet-context .section-title button:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+.context-status {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.context-text {
+  margin-top: 12px;
+  white-space: pre-line;
+  color: #2b4549;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.context-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.context-sources a {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .match-details,
 .my-prediction {
   margin-top: 14px;
@@ -2182,6 +2300,7 @@ body[data-theme="dark"] .side-panel > *,
 body[data-theme="dark"] .group-card,
 body[data-theme="dark"] .mini-game,
 body[data-theme="dark"] .match-assistant,
+body[data-theme="dark"] .internet-context,
 body[data-theme="dark"] .match-details,
 body[data-theme="dark"] .my-prediction,
 body[data-theme="dark"] .ai-summary,
@@ -2213,6 +2332,7 @@ body[data-theme="dark"] .fixture-button.is-active {
 body[data-theme="dark"] .start-copy p:not(.eyebrow),
 body[data-theme="dark"] .ai-summary p,
 body[data-theme="dark"] .match-assistant > p,
+body[data-theme="dark"] .context-text,
 body[data-theme="dark"] .track-card p {
   color: #bbbbbb;
 }
@@ -2400,6 +2520,7 @@ body[data-theme="lamborghini"] .side-panel > *,
 body[data-theme="lamborghini"] .group-card,
 body[data-theme="lamborghini"] .mini-game,
 body[data-theme="lamborghini"] .match-assistant,
+body[data-theme="lamborghini"] .internet-context,
 body[data-theme="lamborghini"] .match-details,
 body[data-theme="lamborghini"] .my-prediction,
 body[data-theme="lamborghini"] .ai-summary,
@@ -2456,6 +2577,7 @@ body[data-theme="lamborghini"] .auth-tabs button {
 body[data-theme="lamborghini"] .start-copy p:not(.eyebrow),
 body[data-theme="lamborghini"] .ai-summary p,
 body[data-theme="lamborghini"] .match-assistant > p,
+body[data-theme="lamborghini"] .context-text,
 body[data-theme="lamborghini"] .track-card p,
 body[data-theme="lamborghini"] .section-title p,
 body[data-theme="lamborghini"] .fixture-button span,
@@ -2549,6 +2671,7 @@ body[data-theme="bugatti"] .side-panel > *,
 body[data-theme="bugatti"] .group-card,
 body[data-theme="bugatti"] .mini-game,
 body[data-theme="bugatti"] .match-assistant,
+body[data-theme="bugatti"] .internet-context,
 body[data-theme="bugatti"] .match-details,
 body[data-theme="bugatti"] .my-prediction,
 body[data-theme="bugatti"] .ai-summary,
@@ -2599,6 +2722,7 @@ body[data-theme="bugatti"] .source-line a {
 body[data-theme="bugatti"] .start-copy p:not(.eyebrow),
 body[data-theme="bugatti"] .ai-summary p,
 body[data-theme="bugatti"] .match-assistant > p,
+body[data-theme="bugatti"] .context-text,
 body[data-theme="bugatti"] .track-card p,
 body[data-theme="bugatti"] .section-title p,
 body[data-theme="bugatti"] .fixture-button span,
@@ -2721,6 +2845,7 @@ body[data-theme="bmw-m"] .side-panel > *,
 body[data-theme="bmw-m"] .group-card,
 body[data-theme="bmw-m"] .mini-game,
 body[data-theme="bmw-m"] .match-assistant,
+body[data-theme="bmw-m"] .internet-context,
 body[data-theme="bmw-m"] .match-details,
 body[data-theme="bmw-m"] .my-prediction,
 body[data-theme="bmw-m"] .ai-summary,
