@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent, type PointerEvent } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from 'react';
 import stadiumImage from './assets/stadium-ai-world-cup.png';
 import {
   loadUpcomingPredictions,
@@ -15,8 +15,13 @@ import {
   loadInternetContext,
   type InternetContext,
 } from './lib/internetContext';
+import { loadSportScoreMatches } from './lib/sportScore';
 
-type Aim = 'left' | 'center' | 'right';
+type ShotTarget = {
+  x: number;
+  y: number;
+};
+type KeeperDive = 'center' | 'left' | 'right' | 'up';
 type AccessMode = 'guest' | 'user' | null;
 type AuthMode = 'signin' | 'signup';
 type MatchFilter = 'all' | 'live' | 'high' | 'upset';
@@ -31,65 +36,6 @@ type GroupStanding = {
     qualified?: boolean;
   }>;
 };
-
-const fallbackPredictions: WorldCupPrediction[] = [
-  {
-    id: 'usa-eng-fallback',
-    matchTime: '2026-07-04T20:00:00Z',
-    stage: 'Group B',
-    venue: 'New York/New Jersey',
-    homeName: 'USA',
-    homeCode: 'USA',
-    awayName: 'England',
-    awayCode: 'ENG',
-    homeWin: 24.8,
-    draw: 22.4,
-    awayWin: 52.8,
-    predictedScore: '1-2',
-    consensusPick: 'ENG',
-    confidence: 63,
-    aiSummary: 'England is favored by squad depth, while USA keeps upset value from host-region lift.',
-    modelBreakdown: [
-      { model: 'GPT-5', pick: 'ENG', score: '1-2', confidence: 64 },
-      { model: 'Claude', pick: 'ENG', score: '1-1', confidence: 56 },
-      { model: 'Gemini', pick: 'ENG', score: '2-3', confidence: 61 },
-      { model: 'DeepSeek', pick: 'USA', score: '2-1', confidence: 42 },
-    ],
-    status: 'upcoming',
-    sourceName: 'Fallback demo',
-    sourceUrl: null,
-    sourceUpdatedAt: null,
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'bra-sen-fallback',
-    matchTime: '2026-07-04T23:00:00Z',
-    stage: 'Group B',
-    venue: 'Dallas',
-    homeName: 'Brazil',
-    homeCode: 'BRA',
-    awayName: 'Senegal',
-    awayCode: 'SEN',
-    homeWin: 61.9,
-    draw: 18.7,
-    awayWin: 19.4,
-    predictedScore: '2-1',
-    consensusPick: 'BRA',
-    confidence: 69,
-    aiSummary: 'Brazil leads through attacking ceiling, but Senegal remains a counterattacking threat.',
-    modelBreakdown: [
-      { model: 'GPT-5', pick: 'BRA', score: '2-1', confidence: 69 },
-      { model: 'Claude', pick: 'BRA', score: '1-0', confidence: 62 },
-      { model: 'Gemini', pick: 'BRA', score: '3-1', confidence: 72 },
-      { model: 'DeepSeek', pick: 'BRA', score: '2-2', confidence: 51 },
-    ],
-    status: 'upcoming',
-    sourceName: 'Fallback demo',
-    sourceUrl: null,
-    sourceUpdatedAt: null,
-    updatedAt: new Date().toISOString(),
-  },
-];
 
 const groupStandings: GroupStanding[] = [
   { group: 'A', teams: [
@@ -340,15 +286,29 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
 }
 
 function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
+  const [question, setQuestion] = useState('');
   const [analysis, setAnalysis] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [contextMessage, setContextMessage] = useState('');
 
   useEffect(() => {
+    setQuestion('');
     setAnalysis('');
+    setContextMessage('');
   }, [prediction.id]);
 
-  async function analyzeMatch() {
+  async function analyzeMatch(customQuestion = '') {
     setIsAnalyzing(true);
+    setContextMessage('Checking internet context, player news, and team form...');
+
+    let groundedContext: InternetContext | null = null;
+
+    try {
+      groundedContext = await loadInternetContext(prediction);
+      setContextMessage('Internet context added to the AI forecast.');
+    } catch {
+      setContextMessage('Internet context unavailable. Forecast uses saved match data only.');
+    }
 
     const prompt = [
       'You are a football match prediction assistant.',
@@ -360,11 +320,24 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
       `Probabilities: home ${prediction.homeWin}%, draw ${prediction.draw}%, away ${prediction.awayWin}%`,
       `Source summary: ${prediction.aiSummary}`,
       `Model confidence: ${prediction.confidence}%`,
+      groundedContext?.text ? `Current internet context:\n${groundedContext.text}` : '',
+      groundedContext?.sources.length
+        ? `Sources:\n${groundedContext.sources.map((source) => `- ${source.title}: ${source.url}`).join('\n')}`
+        : '',
+      customQuestion ? `User question: ${customQuestion}` : '',
       '',
       'Give the user a practical decision guide.',
-      'Include: final pick, winning chances, score prediction, risk level, and what could change the prediction.',
-      'Be honest if the prediction is uncertain. Do not invent live injuries, odds, or lineups.',
-    ].join('\n');
+      customQuestion
+        ? 'Answer the user question directly first, then include final pick, winning chances, score prediction, and risk level.'
+        : 'Include: final pick, winning chances, score prediction, risk level, and what could change the prediction.',
+      'Use the internet context for team form, key players, injuries, suspensions, availability, and tactical matchup notes.',
+      'If player news is missing or unclear, say it is not confirmed.',
+      'Separate verified facts from AI inference.',
+      'Do not treat ScoreGPT, simulated brackets, prediction pages, or bracket generators as official fixtures, results, injuries, or lineups.',
+      'Prediction pages may only support the prediction itself, not verified match facts.',
+      'Start with a fixture verification note.',
+      'Be honest if the prediction is uncertain. Do not invent live injuries, odds, results, or lineups.',
+    ].filter(Boolean).join('\n');
 
     try {
       const { data, error } = await supabase.functions.invoke<{ text?: string }>('ai', {
@@ -395,6 +368,13 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
     }
   }
 
+  function askAssistant(event: FormEvent) {
+    event.preventDefault();
+    const trimmedQuestion = question.trim();
+    if (!trimmedQuestion || isAnalyzing) return;
+    void analyzeMatch(trimmedQuestion);
+  }
+
   return (
     <section className="match-assistant" aria-label="AI match assistant">
       <div className="section-title compact">
@@ -402,7 +382,7 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
           <p>AI assistant</p>
           <h2>Prediction advisor</h2>
         </div>
-        <button disabled={isAnalyzing} onClick={analyzeMatch} type="button">
+        <button disabled={isAnalyzing} onClick={() => analyzeMatch()} type="button">
           {isAnalyzing ? 'Analyzing' : 'Analyze match'}
         </button>
       </div>
@@ -437,6 +417,18 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
       <p className="advisor-text">
         {analysis || `Press Analyze match to get a full AI decision guide for ${prediction.homeCode} vs ${prediction.awayCode}.`}
       </p>
+      {contextMessage && <p className="advisor-context-note">{contextMessage}</p>}
+
+      <form className="advisor-chat" onSubmit={askAssistant}>
+        <input
+          onChange={(event) => setQuestion(event.target.value)}
+          placeholder="Ask about chances, risk, draw, or predicted score"
+          value={question}
+        />
+        <button disabled={isAnalyzing || !question.trim()} type="submit">
+          {isAnalyzing ? 'Wait' : 'Send'}
+        </button>
+      </form>
     </section>
   );
 }
@@ -640,15 +632,17 @@ function MyPredictionBox({
 }
 
 function PenaltyGame() {
-  const directions: Aim[] = ['left', 'center', 'right'];
   const resetTimer = useRef<number | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
   const [shots, setShots] = useState(0);
   const [goals, setGoals] = useState(0);
-  const [keeper, setKeeper] = useState<Aim>('center');
-  const [ball, setBall] = useState<Aim>('center');
+  const [keeperX, setKeeperX] = useState(50);
+  const [keeperY, setKeeperY] = useState(44);
+  const [keeperDive, setKeeperDive] = useState<KeeperDive>('center');
+  const [target, setTarget] = useState<ShotTarget>({ x: 50, y: 78 });
+  const [lastTarget, setLastTarget] = useState<ShotTarget>({ x: 50, y: 78 });
   const [shotState, setShotState] = useState<'ready' | 'goal' | 'saved'>('ready');
-  const [message, setMessage] = useState('Choose a corner and take the shot.');
+  const [message, setMessage] = useState('Move the cursor inside the goal and click to shoot.');
   const [isAutoRestarting, setIsAutoRestarting] = useState(false);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -659,32 +653,50 @@ function PenaltyGame() {
     }
   }, []);
 
-  function directionFromPointer(clientX: number, element: HTMLElement): Aim {
-    const rect = element.getBoundingClientRect();
-    const position = (clientX - rect.left) / rect.width;
+  function clamp(value: number, min: number, max: number) {
+    return Math.min(max, Math.max(min, value));
+  }
 
-    if (position < 0.34) return 'left';
-    if (position > 0.66) return 'right';
-    return 'center';
+  function targetFromPointer(clientX: number, clientY: number, element: HTMLElement): ShotTarget {
+    const rect = element.getBoundingClientRect();
+    return {
+      x: clamp(((clientX - rect.left) / rect.width) * 100, 10, 90),
+      y: clamp(((clientY - rect.top) / rect.height) * 100, 10, 82),
+    };
   }
 
   function aimWithMouse(event: PointerEvent<HTMLDivElement>) {
     if (shotState !== 'ready' || shots >= 5) return;
-    setBall(directionFromPointer(event.clientX, event.currentTarget));
+    setTarget(targetFromPointer(event.clientX, event.clientY, event.currentTarget));
   }
 
-  function chooseKeeperMove(direction: Aim): Aim {
+  function chooseKeeperMove(shot: ShotTarget): ShotTarget {
     const roll = Math.random();
+    const randomX = 18 + Math.random() * 64;
+    const randomY = 28 + Math.random() * 34;
 
     if (difficulty === 'easy' && roll < 0.62) {
-      return directions.filter((item) => item !== direction)[Math.floor(Math.random() * 2)];
+      return {
+        x: shot.x < 50 ? 72 + Math.random() * 14 : 14 + Math.random() * 14,
+        y: randomY,
+      };
     }
 
     if (difficulty === 'hard' && roll < 0.58) {
-      return direction;
+      return {
+        x: clamp(shot.x + (Math.random() * 10 - 5), 14, 86),
+        y: clamp(shot.y + (Math.random() * 14 - 7), 24, 62),
+      };
     }
 
-    return directions[Math.floor(Math.random() * directions.length)];
+    if (difficulty === 'normal' && roll < 0.42) {
+      return {
+        x: clamp(shot.x + (Math.random() * 18 - 9), 14, 86),
+        y: clamp(shot.y + (Math.random() * 20 - 10), 24, 62),
+      };
+    }
+
+    return { x: randomX, y: randomY };
   }
 
   function playTone(type: 'kick' | 'goal' | 'save') {
@@ -714,22 +726,30 @@ function PenaltyGame() {
     oscillator.stop(now + 0.2);
   }
 
-  function shoot(direction = ball) {
+  function shoot(shot = target) {
     if (shots >= 5 || shotState !== 'ready') return;
 
-    const keeperMove = chooseKeeperMove(direction);
-    const scored = direction !== keeperMove;
+    const keeperMove = chooseKeeperMove(shot);
+    const reach = difficulty === 'hard' ? 20 : difficulty === 'easy' ? 13 : 17;
+    const verticalReach = difficulty === 'hard' ? 24 : difficulty === 'easy' ? 16 : 20;
+    const distanceX = Math.abs(shot.x - keeperMove.x);
+    const distanceY = Math.abs(shot.y - keeperMove.y);
+    const scored = distanceX > reach || distanceY > verticalReach;
+    const ballEnd = scored ? shot : keeperMove;
     const nextShots = shots + 1;
     const nextGoals = goals + (scored ? 1 : 0);
 
     playTone('kick');
     window.setTimeout(() => playTone(scored ? 'goal' : 'save'), 120);
-    setBall(direction);
-    setKeeper(keeperMove);
+    setTarget(ballEnd);
+    setLastTarget(shot);
+    setKeeperX(keeperMove.x);
+    setKeeperY(keeperMove.y);
+    setKeeperDive(keeperMove.y < 34 ? 'up' : keeperMove.x < 43 ? 'left' : keeperMove.x > 57 ? 'right' : 'center');
     setShotState(scored ? 'goal' : 'saved');
     setShots(nextShots);
     setGoals(nextGoals);
-    setMessage(scored ? 'Goal. Clean finish.' : 'Saved. The keeper read it.');
+    setMessage(scored ? 'Goal. Clean finish.' : 'Saved. The keeper reached it.');
 
     resetTimer.current = window.setTimeout(() => {
       if (nextShots >= 5) {
@@ -739,20 +759,25 @@ function PenaltyGame() {
         resetTimer.current = window.setTimeout(() => {
           setShots(0);
           setGoals(0);
-          setBall('center');
-          setKeeper('center');
+          setTarget({ x: 50, y: 78 });
+          setLastTarget({ x: 50, y: 78 });
+          setKeeperX(50);
+          setKeeperY(44);
+          setKeeperDive('center');
           setShotState('ready');
           setIsAutoRestarting(false);
-          setMessage('New round. Aim with the mouse and click to shoot.');
+          setMessage('New round. Move the cursor inside the goal and click to shoot.');
         }, 2200);
 
         return;
       }
 
-      setBall('center');
-      setKeeper('center');
+      setTarget({ x: 50, y: 78 });
+      setKeeperX(50);
+      setKeeperY(44);
+      setKeeperDive('center');
       setShotState('ready');
-      setMessage('Aim with the mouse and click to shoot.');
+      setMessage('Move the cursor inside the goal and click to shoot.');
     }, 850);
   }
 
@@ -762,12 +787,32 @@ function PenaltyGame() {
     }
     setShots(0);
     setGoals(0);
-    setKeeper('center');
-    setBall('center');
+    setKeeperX(50);
+    setKeeperY(44);
+    setKeeperDive('center');
+    setTarget({ x: 50, y: 78 });
+    setLastTarget({ x: 50, y: 78 });
     setShotState('ready');
     setIsAutoRestarting(false);
-    setMessage('Aim with the mouse and click to shoot.');
+    setMessage('Move the cursor inside the goal and click to shoot.');
   }
+
+  function shootAtPointer(event: PointerEvent<HTMLDivElement>) {
+    const shot = targetFromPointer(event.clientX, event.clientY, event.currentTarget);
+    setTarget(shot);
+    shoot(shot);
+  }
+
+  const goalStyle = {
+    '--aim-x': `${target.x}%`,
+    '--aim-y': `${target.y}%`,
+    '--ball-x': shotState === 'ready' ? '50%' : `${target.x}%`,
+    '--ball-y': shotState === 'ready' ? '84%' : `${target.y}%`,
+    '--keeper-x': `${keeperX}%`,
+    '--keeper-y': `${keeperY}%`,
+    '--trail-offset': `${(lastTarget.x - 50) * 0.38}px`,
+    '--trail-angle': `${(lastTarget.x - 50) * 0.72}deg`,
+  } as CSSProperties;
 
   return (
     <section className="mini-game" aria-label="Penalty mini game">
@@ -795,13 +840,17 @@ function PenaltyGame() {
         <button className="sound-toggle" onClick={() => setSoundEnabled((enabled) => !enabled)} type="button">
           Sound {soundEnabled ? 'On' : 'Off'}
         </button>
+        <button className="sound-toggle reset-shot" onClick={resetGame} type="button">
+          Reset
+        </button>
       </div>
 
       <div
         className={`goal-box ${shotState}`}
-        onClick={() => shoot()}
+        onPointerDown={shootAtPointer}
         onPointerMove={aimWithMouse}
         role="button"
+        style={goalStyle}
         tabIndex={0}
       >
         <div className="goal-frame" aria-hidden="true">
@@ -810,14 +859,15 @@ function PenaltyGame() {
           <span className="goal-crossbar" />
         </div>
         <div className="net" />
-        <div className={`keeper keeper-${keeper}`}>
+        <div className="aim-cursor" aria-hidden="true" />
+        <div className={`keeper keeper-dive-${keeperDive}`}>
           <span className="keeper-head" />
           <span className="keeper-arm keeper-arm-left" />
           <span className="keeper-body" />
           <span className="keeper-arm keeper-arm-right" />
         </div>
-        <div className={`shot-trail trail-${ball}`} />
-        <div className={`striker striker-${ball} striker-${shotState}`} aria-hidden="true">
+        <div className="shot-trail" />
+        <div className={`striker striker-${shotState}`} aria-hidden="true">
           <span className="striker-head" />
           <span className="striker-body" />
           <span className="striker-arm striker-arm-left" />
@@ -825,27 +875,16 @@ function PenaltyGame() {
           <span className="striker-leg striker-leg-left" />
           <span className="striker-leg striker-leg-right" />
         </div>
-        <div className={`ball ball-${ball}`} />
+        <div className="ball" />
       </div>
 
       <div className="game-status">
         <strong>{message}</strong>
-        <span>{isAutoRestarting ? 'Restarting...' : `Shot ${Math.min(shots + 1, 5)} of 5 / aim: ${ball}`}</span>
-      </div>
-
-      <div className="shot-controls">
-        <button disabled={shots >= 5 || shotState !== 'ready'} onClick={() => shoot('left')} type="button">
-          Left
-        </button>
-        <button disabled={shots >= 5 || shotState !== 'ready'} onClick={() => shoot('center')} type="button">
-          Center
-        </button>
-        <button disabled={shots >= 5 || shotState !== 'ready'} onClick={() => shoot('right')} type="button">
-          Right
-        </button>
-        <button className="reset-shot" onClick={resetGame} type="button">
-          Reset
-        </button>
+        <span>
+          {isAutoRestarting
+            ? 'Restarting...'
+            : `Shot ${Math.min(shots + 1, 5)} of 5 / target ${Math.round(target.x)}-${Math.round(target.y)}`}
+        </span>
       </div>
     </section>
   );
@@ -859,25 +898,53 @@ function App() {
       ? savedTheme
       : 'light';
   });
-  const [predictions, setPredictions] = useState<WorldCupPrediction[]>(fallbackPredictions);
-  const [selectedId, setSelectedId] = useState(fallbackPredictions[0].id);
+  const [predictions, setPredictions] = useState<WorldCupPrediction[]>([]);
+  const [selectedId, setSelectedId] = useState('');
   const [isLive, setIsLive] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [isLoadingPredictions, setIsLoadingPredictions] = useState(true);
   const [matchFilter, setMatchFilter] = useState<MatchFilter>('all');
 
   async function refreshPredictions() {
+    setIsLoadingPredictions(true);
+
     try {
-      const nextPredictions = (await loadUpcomingPredictions()).filter(isFutureMatch);
+      let supabaseError = '';
+      let sportScoreError = '';
+      let nextPredictions: WorldCupPrediction[] = [];
+
+      try {
+        nextPredictions = (await loadUpcomingPredictions()).filter(isFutureMatch);
+      } catch (error) {
+        supabaseError = error instanceof Error ? error.message : 'Supabase unavailable';
+      }
+
+      if (nextPredictions.length === 0) {
+        try {
+          nextPredictions = await loadSportScoreMatches();
+        } catch (error) {
+          sportScoreError = error instanceof Error ? error.message : 'SportScore unavailable';
+        }
+      }
 
       if (nextPredictions.length > 0) {
         setPredictions(nextPredictions);
         setSelectedId((currentId) => nextPredictions.some((item) => item.id === currentId) ? currentId : nextPredictions[0].id);
         setIsLive(true);
         setLoadError('');
+      } else {
+        throw new Error([
+          supabaseError && `Supabase: ${supabaseError}`,
+          sportScoreError && `SportScore: ${sportScoreError}`,
+        ].filter(Boolean).join(' / ') || 'No real match data is available right now.');
       }
     } catch (error) {
+      setPredictions([]);
+      setSelectedId('');
       setIsLive(false);
-      setLoadError(error instanceof Error ? error.message : 'Supabase is unavailable');
+      setLoadError(error instanceof Error ? error.message : 'No real match data is available right now.');
+    } finally {
+      setIsLoadingPredictions(false);
     }
   }
 
@@ -902,8 +969,8 @@ function App() {
   }, []);
 
   const upcomingPredictions = predictions.filter(isFutureMatch);
-  const displayPredictions = upcomingPredictions.length > 0 ? upcomingPredictions : fallbackPredictions.filter(isFutureMatch);
-  const selectedPrediction = displayPredictions.find((prediction) => prediction.id === selectedId) ?? displayPredictions[0];
+  const displayPredictions = upcomingPredictions;
+  const selectedPrediction = displayPredictions.find((prediction) => prediction.id === selectedId) ?? displayPredictions[0] ?? null;
   const liveMatches = displayPredictions.filter((prediction) => prediction.status === 'live').length;
   const visiblePredictions = displayPredictions.filter((prediction) => {
     if (matchFilter === 'live') return prediction.status === 'live';
@@ -912,16 +979,105 @@ function App() {
     return true;
   });
   const averageConfidence = Math.round(
-    displayPredictions.reduce((sum, prediction) => sum + prediction.confidence, 0) / displayPredictions.length,
+    displayPredictions.length > 0
+      ? displayPredictions.reduce((sum, prediction) => sum + prediction.confidence, 0) / displayPredictions.length
+      : 0,
   );
   const upsetAlert = [...displayPredictions]
     .filter((prediction) => prediction.consensusPick !== 'TBD')
-    .sort((a, b) => a.confidence - b.confidence)[0] ?? displayPredictions[0];
+    .sort((a, b) => a.confidence - b.confidence)[0] ?? null;
   const groups = groupStandings.filter((group) => ['A', 'E', 'I', 'L'].includes(group.group));
   const soonMatch = getSoonMatch(displayPredictions);
 
   if (!accessMode) {
     return <StartScreen onEnter={setAccessMode} />;
+  }
+
+  if (!selectedPrediction) {
+    return (
+      <main className="app-shell">
+        <section
+          className="hero"
+          style={{
+            backgroundImage: `linear-gradient(90deg, rgba(18, 49, 58, 0.88), rgba(18, 49, 58, 0.58), rgba(18, 49, 58, 0.18)), url(${stadiumImage})`,
+          }}
+        >
+          <div className="hero-motion" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+
+          <nav className="topbar" aria-label="Primary navigation">
+            <strong>ScoreAI 2026</strong>
+            <div>
+              <a href="#matches">Live matches</a>
+              <a href="#groups">Groups</a>
+              <a href="/profile.html">Profile</a>
+              <a href="/themes.html">Themes</a>
+              <button className="topbar-action" onClick={() => setAccessMode(null)} type="button">
+                {accessMode === 'guest' ? 'Guest' : 'Account'}
+              </button>
+              <button
+                className="topbar-action"
+                onClick={() => setThemeMode((current) => current === 'light' ? 'dark' : 'light')}
+                type="button"
+              >
+                {themeMode === 'light' ? 'Dark' : 'Light'}
+              </button>
+            </div>
+          </nav>
+
+          <div className="hero__content">
+            <p className="eyebrow">Realtime World Cup predictions</p>
+            <h1>Only real match data is shown.</h1>
+            <p className="hero__copy">
+              Supabase and SportScore are checked live. If neither source has upcoming or live matches,
+              the site shows an error instead of a fake demo prediction.
+            </p>
+            <div className="hero__stats" aria-label="Prediction summary">
+              <div>
+                <span>0</span>
+                <small>next matches</small>
+              </div>
+              <div>
+                <span>{isLoadingPredictions ? 'Checking' : 'Error'}</span>
+                <small>data source</small>
+              </div>
+              <div>
+                <span>Real</span>
+                <small>data mode</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="dashboard dashboard-empty" id="matches">
+          <section className="match-board real-data-empty">
+            <div className="section-title">
+              <div>
+                <p>Realtime feed</p>
+                <h2>No real matches loaded</h2>
+              </div>
+              <span className="status-pill">Real only</span>
+            </div>
+            <p>
+              {isLoadingPredictions
+                ? 'Checking Supabase first, then SportScore football live/recent feed...'
+                : loadError || 'No real upcoming or live matches are available right now.'}
+            </p>
+            <button disabled={isLoadingPredictions} onClick={refreshPredictions} type="button">
+              {isLoadingPredictions ? 'Checking' : 'Refresh real data'}
+            </button>
+            <a href="https://sportscore.com/" rel="dofollow noreferrer" target="_blank">
+              Powered by SportScore
+            </a>
+          </section>
+        </section>
+
+        <PenaltyGame />
+      </main>
+    );
   }
 
   return (
@@ -972,7 +1128,7 @@ function App() {
               <small>next matches</small>
             </div>
             <div>
-              <span>{isLive ? 'Live' : 'Demo'}</span>
+              <span>{isLive ? 'Live' : 'Real'}</span>
               <small>data source</small>
             </div>
             <div>
@@ -999,7 +1155,7 @@ function App() {
               <h2>Next matches</h2>
             </div>
             <span className={isLive ? 'status-pill is-live' : 'status-pill'}>
-              {isLive ? 'Connected' : 'Fallback'}
+              {isLive ? 'Connected' : 'Real only'}
             </span>
           </div>
 
@@ -1080,6 +1236,11 @@ function App() {
             <p>{selectedPrediction.aiSummary}</p>
             <div className="source-line">
               <strong>{selectedPrediction.sourceName}</strong>
+              {selectedPrediction.sourceName.includes('SportScore') && (
+                <a href="https://sportscore.com/" rel="dofollow noreferrer" target="_blank">
+                  Powered by SportScore
+                </a>
+              )}
               {selectedPrediction.sourceUrl && (
                 <a href={selectedPrediction.sourceUrl} rel="noreferrer" target="_blank">
                   Source
@@ -1115,11 +1276,13 @@ function App() {
         </section>
 
         <aside className="side-panel">
-          <div className="track-card upset-card">
-            <span>Upset alert</span>
-            <strong>{upsetAlert.homeCode} - {upsetAlert.awayCode}</strong>
-            <p>{upsetAlert.consensusPick} is the pick, but confidence is only {upsetAlert.confidence}%.</p>
-          </div>
+          {upsetAlert && (
+            <div className="track-card upset-card">
+              <span>Upset alert</span>
+              <strong>{upsetAlert.homeCode} - {upsetAlert.awayCode}</strong>
+              <p>{upsetAlert.consensusPick} is the pick, but confidence is only {upsetAlert.confidence}%.</p>
+            </div>
+          )}
 
           <div className="track-card">
             <span>Live now</span>

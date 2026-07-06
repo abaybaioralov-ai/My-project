@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
       throw new Error('Missing GEMINI_API_KEY secret.');
     }
 
-    const { homeName, awayName, matchTime, venue, aiPick, predictedScore } = await req.json();
+    const { homeName, awayName, matchTime, venue, aiPick, predictedScore, currentDate } = await req.json();
 
     if (!homeName || !awayName) {
       throw new Error('homeName and awayName are required.');
@@ -59,6 +59,7 @@ Deno.serve(async (req) => {
 
     const prompt = [
       `Use current internet information and Google Search grounding.`,
+      `Current date: ${currentDate ?? new Date().toISOString()}`,
       `Match: ${homeName} vs ${awayName}`,
       `Kickoff: ${matchTime ?? 'unknown'}`,
       `Venue: ${venue ?? 'unknown'}`,
@@ -66,11 +67,29 @@ Deno.serve(async (req) => {
       `Projected score: ${predictedScore ?? 'unknown'}`,
       '',
       'Write for a football fan deciding whether to trust the prediction.',
+      'Focus on real, source-supported information only.',
+      'Very important:',
+      '- Do not treat predicted fixtures, simulated brackets, or AI-generated match pages as real official results.',
+      '- Do not use ScoreGPT, prediction pages, simulator pages, or bracket generators as proof of official fixtures, results, injuries, or lineups.',
+      '- Prediction pages may only be described as prediction sources, not verified match facts.',
+      '- For official fixture/result claims, prefer FIFA, confederation, federation, league, club/team, or reputable sports news sources.',
+      '- Do not claim a team already won/drew/lost a future match unless a reliable source confirms the final result.',
+      '- If the specific fixture, player availability, or lineup is not verifiable, say it is not verified.',
+      '- Separate verified facts from inference.',
+      'Check these areas when available:',
+      '- Recent team form and last meaningful matches',
+      '- Important players for both teams',
+      '- Confirmed or widely reported injuries, suspensions, and absences',
+      '- Likely tactical strengths, weak spots, and matchup edges',
+      '- Tournament motivation and travel/venue factors',
       'Return short sections:',
       '1. Fresh context',
-      '2. What favors the AI pick',
-      '3. What could change the pick',
-      '4. Decision note',
+      '2. Key players and availability',
+      '3. What favors the AI pick',
+      '4. What could change the pick',
+      '5. Decision note',
+      'If reliable player/team news is unavailable, say that clearly.',
+      'Start the answer with "Fixture verification:" and say whether the specific match is verified, prediction-only, or unverified.',
       'Do not invent injuries, lineups, odds, or live facts if sources do not support them.',
     ].join('\n');
 

@@ -122,6 +122,10 @@
         gap: 14px;
       }
 
+      .profile-grid + .profile-section {
+        margin-top: 18px;
+      }
+
       .profile-card {
         min-height: 170px;
         padding: 18px;
@@ -166,18 +170,159 @@
         font-weight: 900;
       }
 
+      .profile-section {
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--surface);
+      }
+
+      body[data-theme="lamborghini"] .profile-section,
+      body[data-theme="bugatti"] .profile-section {
+        border-radius: 0;
+      }
+
+      .section-heading {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+
+      .section-heading p {
+        margin: 0 0 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .section-heading h2 {
+        margin: 0;
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      .rank-pill {
+        padding: 8px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .rating-board {
+        display: grid;
+        grid-template-columns: 1.1fr repeat(3, minmax(0, 0.7fr));
+        gap: 12px;
+      }
+
+      .rating-score {
+        min-height: 156px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(29, 113, 184, 0.16), transparent 62%),
+          var(--surface-2);
+      }
+
+      .rating-score span,
+      .rating-stat span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .rating-score strong {
+        display: block;
+        margin-top: 32px;
+        color: var(--ink);
+        font-size: 54px;
+        line-height: 0.9;
+      }
+
+      .rating-stat {
+        min-height: 156px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-2);
+      }
+
+      .rating-stat strong {
+        display: block;
+        margin-top: 38px;
+        font-size: 30px;
+        line-height: 1;
+      }
+
+      .badge-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .badge-card {
+        min-height: 132px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface-2);
+        opacity: 0.52;
+      }
+
+      .badge-card.is-earned {
+        opacity: 1;
+        border-color: var(--accent);
+      }
+
+      .badge-card span {
+        display: block;
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .badge-card strong {
+        display: block;
+        margin-top: 34px;
+        font-size: 22px;
+        line-height: 1;
+      }
+
+      .badge-card p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
       @media (max-width: 760px) {
         .page {
           width: min(100% - 28px, 1080px);
         }
 
         .topbar,
-        .profile-grid {
+        .profile-grid,
+        .rating-board,
+        .badge-grid {
           grid-template-columns: 1fr;
         }
 
         .topbar {
           align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .section-heading {
           flex-direction: column;
         }
       }
@@ -223,6 +368,68 @@
           <p>Guest predictions saved in this browser.</p>
         </article>
       </section>
+
+      <section class="profile-section" aria-labelledby="rating-title">
+        <div class="section-heading">
+          <div>
+            <p>Mini rating</p>
+            <h2 id="rating-title">Your score</h2>
+          </div>
+          <span class="rank-pill" id="rank-label">Rookie</span>
+        </div>
+
+        <div class="rating-board">
+          <article class="rating-score">
+            <span>Total points</span>
+            <strong id="rating-points">0</strong>
+          </article>
+          <article class="rating-stat">
+            <span>Saved picks</span>
+            <strong id="rating-picks">0</strong>
+          </article>
+          <article class="rating-stat">
+            <span>Theme bonus</span>
+            <strong id="theme-bonus">0</strong>
+          </article>
+          <article class="rating-stat">
+            <span>Team bonus</span>
+            <strong id="team-bonus">0</strong>
+          </article>
+        </div>
+      </section>
+
+      <section class="profile-section" aria-labelledby="badges-title">
+        <div class="section-heading">
+          <div>
+            <p>Badges</p>
+            <h2 id="badges-title">Achievements</h2>
+          </div>
+          <span class="rank-pill" id="badge-count">0/4 earned</span>
+        </div>
+
+        <div class="badge-grid">
+          <article class="badge-card" data-badge="first-pick">
+            <span>Badge</span>
+            <strong>First pick</strong>
+            <p>Save at least one prediction.</p>
+          </article>
+          <article class="badge-card" data-badge="theme-driver">
+            <span>Badge</span>
+            <strong>Theme driver</strong>
+            <p>Choose any custom theme.</p>
+          </article>
+          <article class="badge-card" data-badge="team-loyal">
+            <span>Badge</span>
+            <strong>Team loyal</strong>
+            <p>Select a favorite team.</p>
+          </article>
+          <article class="badge-card" data-badge="risk-taker">
+            <span>Badge</span>
+            <strong>Risk taker</strong>
+            <p>Save three or more picks.</p>
+          </article>
+        </div>
+      </section>
     </main>
 
     <script>
@@ -239,24 +446,56 @@
         : 'light';
       const favoriteTeam = document.querySelector('#favorite-team');
       const favoriteTeamNote = document.querySelector('#favorite-team-note');
+      const savedPickCount = Object.keys(localStorage).filter((key) => key.startsWith('guest-prediction:')).length;
 
       document.body.dataset.theme = theme;
       document.querySelector('#profile-theme').textContent = labels[theme] ?? theme;
-      document.querySelector('#saved-picks').textContent = String(
-        Object.keys(localStorage).filter((key) => key.startsWith('guest-prediction:')).length,
-      );
+      document.querySelector('#saved-picks').textContent = String(savedPickCount);
 
       favoriteTeam.value = localStorage.getItem('favorite-team') ?? '';
       favoriteTeamNote.textContent = favoriteTeam.value
         ? `${favoriteTeam.value} is saved as your favorite team.`
         : 'Pick a team for your profile.';
 
+      function getRating() {
+        const themeBonus = theme !== 'light' ? 5 : 0;
+        const teamBonus = favoriteTeam.value ? 5 : 0;
+        const points = savedPickCount * 10 + themeBonus + teamBonus;
+        const rank = points >= 50 ? 'Expert' : points >= 25 ? 'Analyst' : points >= 10 ? 'Starter' : 'Rookie';
+        return { points, rank, teamBonus, themeBonus };
+      }
+
+      function syncRatingAndBadges() {
+        const rating = getRating();
+        const earned = {
+          'first-pick': savedPickCount >= 1,
+          'theme-driver': theme !== 'light',
+          'team-loyal': Boolean(favoriteTeam.value),
+          'risk-taker': savedPickCount >= 3,
+        };
+        const earnedCount = Object.values(earned).filter(Boolean).length;
+
+        document.querySelector('#rating-points').textContent = String(rating.points);
+        document.querySelector('#rating-picks').textContent = String(savedPickCount);
+        document.querySelector('#theme-bonus').textContent = `+${rating.themeBonus}`;
+        document.querySelector('#team-bonus').textContent = `+${rating.teamBonus}`;
+        document.querySelector('#rank-label').textContent = rating.rank;
+        document.querySelector('#badge-count').textContent = `${earnedCount}/4 earned`;
+
+        Object.entries(earned).forEach(([badge, isEarned]) => {
+          document.querySelector(`[data-badge="${badge}"]`)?.classList.toggle('is-earned', isEarned);
+        });
+      }
+
       favoriteTeam.addEventListener('change', () => {
         localStorage.setItem('favorite-team', favoriteTeam.value);
         favoriteTeamNote.textContent = favoriteTeam.value
           ? `${favoriteTeam.value} is saved as your favorite team.`
           : 'Pick a team for your profile.';
+        syncRatingAndBadges();
       });
+
+      syncRatingAndBadges();
     </script>
   </body>
 </html>

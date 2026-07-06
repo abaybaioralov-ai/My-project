@@ -553,6 +553,49 @@ p {
   font-size: 13px;
 }
 
+.dashboard-empty {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.real-data-empty {
+  min-height: 260px;
+  display: grid;
+  align-content: center;
+  gap: 16px;
+}
+
+.real-data-empty p {
+  max-width: 720px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.real-data-empty button,
+.real-data-empty a {
+  width: fit-content;
+  min-height: 42px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.real-data-empty a {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.62);
+  color: var(--cyan);
+}
+
+.real-data-empty button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
 .fixture-button {
   min-height: 88px;
   padding: 13px;
@@ -792,6 +835,49 @@ p {
   color: #2b4549;
   font-size: 14px;
   line-height: 1.55;
+}
+
+.advisor-context-note {
+  margin-top: 10px;
+  padding: 9px 11px;
+  border: 1px solid rgba(85, 199, 238, 0.22);
+  border-radius: 8px;
+  background: rgba(85, 199, 238, 0.09);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.advisor-chat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 92px;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.advisor-chat input {
+  min-height: 42px;
+  min-width: 0;
+  padding: 0 12px;
+  border: 1px solid rgba(20, 49, 58, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--ink);
+}
+
+.advisor-chat button {
+  min-height: 42px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #f7fffb;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.advisor-chat button:disabled {
+  cursor: default;
+  opacity: 0.58;
 }
 
 .internet-context {
@@ -1118,6 +1204,49 @@ p {
   animation: aim-pulse 1.2s ease-in-out infinite;
 }
 
+.aim-cursor {
+  position: absolute;
+  left: calc(var(--aim-x, 50%) - 13px);
+  top: calc(var(--aim-y, 50%) - 13px);
+  width: 26px;
+  height: 26px;
+  border: 2px solid rgba(247, 255, 251, 0.92);
+  border-radius: 999px;
+  box-shadow: 0 0 0 5px rgba(20, 49, 58, 0.14), inset 0 0 0 5px rgba(247, 255, 251, 0.16);
+  opacity: 0.92;
+  pointer-events: none;
+  transition: left 90ms linear, top 90ms linear, opacity 160ms ease;
+  z-index: 5;
+}
+
+.aim-cursor::before,
+.aim-cursor::after {
+  content: "";
+  position: absolute;
+  background: rgba(247, 255, 251, 0.94);
+}
+
+.aim-cursor::before {
+  left: 50%;
+  top: -9px;
+  bottom: -9px;
+  width: 2px;
+  transform: translateX(-50%);
+}
+
+.aim-cursor::after {
+  top: 50%;
+  left: -9px;
+  right: -9px;
+  height: 2px;
+  transform: translateY(-50%);
+}
+
+.goal .aim-cursor,
+.saved .aim-cursor {
+  opacity: 0;
+}
+
 .score-pop {
   animation: score-pop 420ms ease-out;
 }
@@ -1221,7 +1350,8 @@ p {
 
 .keeper {
   position: absolute;
-  top: 82px;
+  top: calc(var(--keeper-y, 44%) - 46px);
+  left: calc(var(--keeper-x, 50%) - 36px);
   display: grid;
   place-items: center;
   width: 72px;
@@ -1229,6 +1359,26 @@ p {
   filter: drop-shadow(0 14px 14px rgba(20, 49, 58, 0.24));
   transition: left 220ms ease, transform 220ms ease;
   z-index: 3;
+}
+
+.goal .keeper,
+.saved .keeper {
+  animation: keeper-hop 360ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.goal .keeper-dive-left,
+.saved .keeper-dive-left {
+  animation-name: keeper-dive-left;
+}
+
+.goal .keeper-dive-right,
+.saved .keeper-dive-right {
+  animation-name: keeper-dive-right;
+}
+
+.goal .keeper-dive-up,
+.saved .keeper-dive-up {
+  animation-name: keeper-dive-up;
 }
 
 .keeper-head,
@@ -1273,18 +1423,39 @@ p {
   transform: rotate(28deg);
 }
 
-.keeper-left {
-  left: 18%;
-  transform: rotate(-8deg) translateY(-8px);
+.goal .keeper-arm,
+.saved .keeper-arm {
+  width: 58px;
 }
 
-.keeper-center {
-  left: calc(50% - 36px);
+.goal .keeper-dive-left .keeper-arm-left,
+.saved .keeper-dive-left .keeper-arm-left {
+  transform: rotate(-62deg);
 }
 
-.keeper-right {
-  left: calc(82% - 72px);
-  transform: rotate(8deg) translateY(-8px);
+.goal .keeper-dive-left .keeper-arm-right,
+.saved .keeper-dive-left .keeper-arm-right {
+  transform: rotate(-18deg);
+}
+
+.goal .keeper-dive-right .keeper-arm-left,
+.saved .keeper-dive-right .keeper-arm-left {
+  transform: rotate(18deg);
+}
+
+.goal .keeper-dive-right .keeper-arm-right,
+.saved .keeper-dive-right .keeper-arm-right {
+  transform: rotate(62deg);
+}
+
+.goal .keeper-dive-up .keeper-arm-left,
+.saved .keeper-dive-up .keeper-arm-left {
+  transform: rotate(-82deg);
+}
+
+.goal .keeper-dive-up .keeper-arm-right,
+.saved .keeper-dive-up .keeper-arm-right {
+  transform: rotate(82deg);
 }
 
 .shot-trail {
@@ -1305,21 +1476,13 @@ p {
   opacity: 0.72;
 }
 
-.trail-left {
-  transform: translateX(-12px) rotate(-34deg);
-}
-
-.trail-center {
-  transform: translateX(-1px);
-}
-
-.trail-right {
-  transform: translateX(12px) rotate(34deg);
+.shot-trail {
+  transform: translateX(var(--trail-offset, 0px)) rotate(var(--trail-angle, 0deg));
 }
 
 .striker {
   position: absolute;
-  left: calc(50% - 94px);
+  left: calc(50% - 38px);
   bottom: 20px;
   width: 76px;
   height: 112px;
@@ -1413,45 +1576,6 @@ p {
   transform: rotate(-18deg);
 }
 
-.striker-left {
-  left: calc(20% - 76px);
-  transform: rotate(-4deg);
-}
-
-.striker-center {
-  left: calc(50% - 94px);
-}
-
-.striker-right {
-  left: calc(80% - 112px);
-  transform: rotate(4deg);
-}
-
-.striker-ready.striker-left,
-.striker-ready.striker-right {
-  animation: striker-walk-body 520ms ease-out 1;
-}
-
-.striker-ready.striker-left .striker-leg-left,
-.striker-ready.striker-right .striker-leg-left {
-  animation: striker-walk-left 520ms ease-out 1;
-}
-
-.striker-ready.striker-left .striker-leg-right,
-.striker-ready.striker-right .striker-leg-right {
-  animation: striker-walk-right 520ms ease-out 1;
-}
-
-.striker-ready.striker-left .striker-arm-left,
-.striker-ready.striker-right .striker-arm-left {
-  animation: striker-arm-walk-left 520ms ease-out 1;
-}
-
-.striker-ready.striker-left .striker-arm-right,
-.striker-ready.striker-right .striker-arm-right {
-  animation: striker-arm-walk-right 520ms ease-out 1;
-}
-
 .striker-goal .striker-leg-right,
 .striker-saved .striker-leg-right {
   animation: striker-kick 420ms ease-out;
@@ -1464,7 +1588,8 @@ p {
 
 .ball {
   position: absolute;
-  bottom: 30px;
+  left: calc(var(--ball-x, 50%) - 17px);
+  top: calc(var(--ball-y, 78%) - 17px);
   width: 34px;
   height: 34px;
   border: 3px solid rgba(20, 49, 58, 0.24);
@@ -1476,25 +1601,11 @@ p {
 }
 
 .goal .ball {
-  bottom: 176px;
   transform: scale(0.78);
 }
 
 .saved .ball {
-  bottom: 118px;
   transform: scale(0.9);
-}
-
-.ball-left {
-  left: 20%;
-}
-
-.ball-center {
-  left: calc(50% - 17px);
-}
-
-.ball-right {
-  left: calc(80% - 34px);
 }
 
 .game-status {
@@ -1515,31 +1626,6 @@ p {
   font-size: 13px;
   font-weight: 850;
   text-transform: uppercase;
-}
-
-.shot-controls {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.shot-controls button {
-  min-height: 44px;
-  border-radius: 8px;
-  background: var(--green);
-  color: #f7fffb;
-  cursor: pointer;
-  font-weight: 900;
-}
-
-.shot-controls button:disabled {
-  cursor: default;
-  opacity: 0.48;
-}
-
-.shot-controls .reset-shot {
-  background: var(--cyan);
 }
 
 @media (max-width: 1040px) {
@@ -1633,10 +1719,6 @@ p {
     grid-template-columns: 1fr;
   }
 
-  .shot-controls {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .game-options,
   .game-status {
     align-items: flex-start;
@@ -1720,58 +1802,47 @@ p {
   }
 }
 
-@keyframes striker-walk-body {
+@keyframes keeper-hop {
   0%,
   100% {
-    translate: 0 0;
+    transform: translateY(0) rotate(0deg);
   }
 
   50% {
-    translate: 0 -3px;
+    transform: translateY(-10px) rotate(0deg);
   }
 }
 
-@keyframes striker-walk-left {
+@keyframes keeper-dive-left {
   0%,
   100% {
-    transform: rotate(18deg);
+    transform: translateY(0) rotate(0deg);
   }
 
   50% {
-    transform: rotate(-12deg);
+    transform: translate(-14px, -15px) rotate(-18deg);
   }
 }
 
-@keyframes striker-walk-right {
+@keyframes keeper-dive-right {
   0%,
   100% {
-    transform: rotate(-18deg);
+    transform: translateY(0) rotate(0deg);
   }
 
   50% {
-    transform: rotate(12deg);
+    transform: translate(14px, -15px) rotate(18deg);
   }
 }
 
-@keyframes striker-arm-walk-left {
+@keyframes keeper-dive-up {
   0%,
   100% {
-    transform: rotate(12deg);
+    transform: translateY(0) scale(1);
   }
 
   50% {
-    transform: rotate(2deg);
-  }
-}
-
-@keyframes striker-arm-walk-right {
-  0%,
-  100% {
-    transform: rotate(-12deg);
-  }
-
-  50% {
-    transform: rotate(-2deg);
+    transform: translateY(-24px) scale(1.03);
   }
 }
 
@@ -1783,11 +1854,8 @@ p {
   .striker-saved .striker-leg-right,
   .striker-goal .striker-body,
   .striker-saved .striker-body,
-  .striker-ready,
-  .striker-ready .striker-leg-left,
-  .striker-ready .striker-leg-right,
-  .striker-ready .striker-arm-left,
-  .striker-ready .striker-arm-right,
+  .goal .keeper,
+  .saved .keeper,
   .score-pop {
     animation: none;
   }
@@ -1920,8 +1988,7 @@ body {
 .guest-auth,
 .filter-tabs button,
 .assistant-row button,
-.prediction-form button,
-.shot-controls button {
+.prediction-form button {
   border: 1px solid #ffffff;
   border-radius: 0;
   background: transparent;
@@ -1937,8 +2004,7 @@ body {
 .primary-auth,
 .filter-tabs button.is-active,
 .assistant-row button,
-.prediction-form button,
-.shot-controls button {
+.prediction-form button {
   background: #000;
   color: #fff;
 }
@@ -2125,8 +2191,7 @@ body {
 .guest-auth,
 .filter-tabs button,
 .assistant-row button,
-.prediction-form button,
-.shot-controls button {
+.prediction-form button {
   border-color: #111418;
   background: #ffffff;
   color: #111418;
@@ -2136,8 +2201,7 @@ body {
 .primary-auth,
 .filter-tabs button.is-active,
 .assistant-row button,
-.prediction-form button,
-.shot-controls button {
+.prediction-form button {
   background: #111418;
   color: #ffffff;
 }
@@ -2351,8 +2415,7 @@ body[data-theme="dark"] .auth-tabs button.is-active,
 body[data-theme="dark"] .primary-auth,
 body[data-theme="dark"] .filter-tabs button.is-active,
 body[data-theme="dark"] .assistant-row button,
-body[data-theme="dark"] .prediction-form button,
-body[data-theme="dark"] .shot-controls button {
+body[data-theme="dark"] .prediction-form button {
   background: #ffffff;
   color: #000000;
 }
@@ -2557,8 +2620,7 @@ body[data-theme="lamborghini"] .auth-tabs button.is-active,
 body[data-theme="lamborghini"] .primary-auth,
 body[data-theme="lamborghini"] .filter-tabs button.is-active,
 body[data-theme="lamborghini"] .assistant-row button,
-body[data-theme="lamborghini"] .prediction-form button,
-body[data-theme="lamborghini"] .shot-controls button {
+body[data-theme="lamborghini"] .prediction-form button {
   border-radius: 0;
   background: #ffc000;
   color: #000000;
@@ -2712,7 +2774,6 @@ body[data-theme="bugatti"] .eyebrow {
 body[data-theme="bugatti"] .primary-auth,
 body[data-theme="bugatti"] .assistant-row button,
 body[data-theme="bugatti"] .prediction-form button,
-body[data-theme="bugatti"] .shot-controls button,
 body[data-theme="bugatti"] .source-line a {
   border-radius: 999px;
   background: #ffffff;
@@ -2874,8 +2935,7 @@ body[data-theme="bmw-m"] .filter-tabs button.is-active,
 body[data-theme="bmw-m"] .auth-tabs button.is-active,
 body[data-theme="bmw-m"] .primary-auth,
 body[data-theme="bmw-m"] .assistant-row button,
-body[data-theme="bmw-m"] .prediction-form button,
-body[data-theme="bmw-m"] .shot-controls button {
+body[data-theme="bmw-m"] .prediction-form button {
   border-color: var(--m-blue-dark);
   background: #f2f8ff;
   color: #111418;
@@ -2901,3 +2961,40 @@ body[data-theme="bmw-m"] .upset-card {
   background: #ffffff;
   color: var(--m-blue-dark);
 }
+
+body[data-theme="dark"] .advisor-chat input,
+body[data-theme="lamborghini"] .advisor-chat input,
+body[data-theme="bugatti"] .advisor-chat input {
+  border-color: #3c3c3c;
+  background: #0d0d0d;
+  color: #ffffff;
+}
+
+body[data-theme="dark"] .advisor-chat button,
+body[data-theme="bugatti"] .advisor-chat button {
+  background: #ffffff;
+  color: #000000;
+}
+
+body[data-theme="lamborghini"] .advisor-chat input,
+body[data-theme="lamborghini"] .advisor-chat button {
+  border-radius: 0;
+}
+
+body[data-theme="lamborghini"] .advisor-chat button {
+  background: #ffc000;
+  color: #000000;
+}
+
+body[data-theme="bmw-m"] .advisor-chat input {
+  border-color: var(--line);
+  background: #fbfcfd;
+  color: var(--ink);
+}
+
+body[data-theme="bmw-m"] .advisor-chat button {
+  border-color: var(--m-blue-dark);
+  background: #f2f8ff;
+  color: #111418;
+}
+

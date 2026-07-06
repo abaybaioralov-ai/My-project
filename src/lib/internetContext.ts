@@ -20,6 +20,7 @@ export async function loadInternetContext(prediction: WorldCupPrediction) {
       venue: prediction.venue,
       aiPick: prediction.consensusPick,
       predictedScore: prediction.predictedScore,
+      currentDate: new Date().toISOString(),
     },
   });
 
