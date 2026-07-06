@@ -227,14 +227,40 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
             Смотри ближайшие матчи, прогнозируемый счет, вероятность победы и объяснение от AI.
             Можно войти в аккаунт или открыть сайт как гость.
           </p>
+          <div className="start-quick-guide" aria-label="30 second site guide">
+            <article>
+              <span>1</span>
+              <strong>Real match feed</strong>
+              <small>Upcoming games load from Supabase first, then SportScore if needed.</small>
+            </article>
+            <article>
+              <span>2</span>
+              <strong>AI forecast</strong>
+              <small>See pick, projected score, confidence, risk, and win chances.</small>
+            </article>
+            <article>
+              <span>3</span>
+              <strong>Ask about the match</strong>
+              <small>Chat about players, injuries, form, tactics, draw risk, or upsets.</small>
+            </article>
+          </div>
+          <p className="start-data-note">
+            No fake old matches: if real data is missing, the site shows an error instead of a demo.
+          </p>
           <div className="start-features">
-            <span>Live Supabase feed</span>
+            <span>Real data only</span>
+            <span>Player context</span>
             <span>AI match chat</span>
             <span>Penalty game</span>
           </div>
         </div>
 
         <form className="auth-box" onSubmit={handleAuth}>
+          <div className="auth-intro">
+            <span>Start here</span>
+            <strong>Save picks or enter as guest</strong>
+            <p>Account mode syncs your predictions. Guest mode opens the full site immediately.</p>
+          </div>
           <div className="auth-tabs">
             <button
               className={authMode === 'signin' ? 'is-active' : ''}
