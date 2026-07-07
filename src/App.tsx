@@ -545,9 +545,9 @@ function clampPercent(value: unknown, fallback: number) {
 }
 
 function normalizeForecast(rawForecast: GeneratedForecast, prediction: WorldCupPrediction): GeneratedForecast {
-  const homeWin = clampPercent(rawForecast.homeWin, 34);
-  const draw = clampPercent(rawForecast.draw, 28);
-  const awayWin = clampPercent(rawForecast.awayWin, 38);
+  const homeWin = Math.min(72, clampPercent(rawForecast.homeWin, 34));
+  const draw = Math.max(14, clampPercent(rawForecast.draw, 28));
+  const awayWin = Math.min(72, clampPercent(rawForecast.awayWin, 38));
   const total = homeWin + draw + awayWin || 100;
   const normalizedHome = Number(((homeWin / total) * 100).toFixed(1));
   const normalizedDraw = Number(((draw / total) * 100).toFixed(1));
