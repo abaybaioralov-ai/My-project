@@ -15,7 +15,6 @@ import {
   loadInternetContext,
   type InternetContext,
 } from './lib/internetContext';
-import { loadSportScoreMatches } from './lib/sportScore';
 
 type ShotTarget = {
   x: number;
@@ -231,7 +230,7 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
             <article>
               <span>1</span>
               <strong>Real match feed</strong>
-              <small>Upcoming games load from Supabase first, then SportScore if needed.</small>
+              <small>ScoreGPT predictions are stored in Supabase and update from that source.</small>
             </article>
             <article>
               <span>2</span>
@@ -935,22 +934,12 @@ function App() {
     setIsLoadingPredictions(true);
 
     try {
-      let supabaseError = '';
-      let sportScoreError = '';
       let nextPredictions: WorldCupPrediction[] = [];
 
       try {
         nextPredictions = (await loadUpcomingPredictions()).filter(isFutureMatch);
       } catch (error) {
-        supabaseError = error instanceof Error ? error.message : 'Supabase unavailable';
-      }
-
-      if (nextPredictions.length === 0) {
-        try {
-          nextPredictions = await loadSportScoreMatches();
-        } catch (error) {
-          sportScoreError = error instanceof Error ? error.message : 'SportScore unavailable';
-        }
+        throw new Error(error instanceof Error ? error.message : 'Supabase unavailable');
       }
 
       if (nextPredictions.length > 0) {
@@ -959,10 +948,7 @@ function App() {
         setIsLive(true);
         setLoadError('');
       } else {
-        throw new Error([
-          supabaseError && `Supabase: ${supabaseError}`,
-          sportScoreError && `SportScore: ${sportScoreError}`,
-        ].filter(Boolean).join(' / ') || 'No real match data is available right now.');
+        throw new Error('No current ScoreGPT predictions are available in Supabase right now.');
       }
     } catch (error) {
       setPredictions([]);
@@ -1058,7 +1044,7 @@ function App() {
             <p className="eyebrow">Realtime World Cup predictions</p>
             <h1>Only real match data is shown.</h1>
             <p className="hero__copy">
-              Supabase and SportScore are checked live. If neither source has upcoming or live matches,
+              ScoreGPT predictions are loaded from Supabase. If the feed has no current rows,
               the site shows an error instead of a fake demo prediction.
             </p>
             <div className="hero__stats" aria-label="Prediction summary">
@@ -1089,14 +1075,14 @@ function App() {
             </div>
             <p>
               {isLoadingPredictions
-                ? 'Checking Supabase first, then SportScore football live/recent feed...'
-                : loadError || 'No real upcoming or live matches are available right now.'}
+                ? 'Checking current ScoreGPT predictions from Supabase...'
+                : loadError || 'No current ScoreGPT predictions are available right now.'}
             </p>
             <button disabled={isLoadingPredictions} onClick={refreshPredictions} type="button">
               {isLoadingPredictions ? 'Checking' : 'Refresh real data'}
             </button>
-            <a href="https://sportscore.com/" rel="dofollow noreferrer" target="_blank">
-              Powered by SportScore
+            <a href="https://scoregpt.app/world-cup-2026" rel="noreferrer" target="_blank">
+              Source: ScoreGPT
             </a>
           </section>
         </section>
@@ -1262,11 +1248,6 @@ function App() {
             <p>{selectedPrediction.aiSummary}</p>
             <div className="source-line">
               <strong>{selectedPrediction.sourceName}</strong>
-              {selectedPrediction.sourceName.includes('SportScore') && (
-                <a href="https://sportscore.com/" rel="dofollow noreferrer" target="_blank">
-                  Powered by SportScore
-                </a>
-              )}
               {selectedPrediction.sourceUrl && (
                 <a href={selectedPrediction.sourceUrl} rel="noreferrer" target="_blank">
                   Source
