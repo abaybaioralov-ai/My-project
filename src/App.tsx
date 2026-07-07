@@ -1319,6 +1319,12 @@ function App() {
         </section>
 
         <PenaltyGame />
+        <section className="bottom-language-panel" aria-label="Language switcher">
+          <span>{languageMode === 'ru' ? 'Язык сайта' : 'Site language'}</span>
+          <button className="language-toggle" onClick={toggleLanguage} type="button">
+            {languageMode === 'ru' ? 'Switch to English' : 'Переключить на русский'}
+          </button>
+        </section>
       </main>
     );
   }
@@ -1561,6 +1567,12 @@ function App() {
       </section>
 
       <PenaltyGame />
+      <section className="bottom-language-panel" aria-label="Language switcher">
+        <span>{languageMode === 'ru' ? 'Язык сайта' : 'Site language'}</span>
+        <button className="language-toggle" onClick={toggleLanguage} type="button">
+          {languageMode === 'ru' ? 'Switch to English' : 'Переключить на русский'}
+        </button>
+      </section>
     </main>
   );
 }

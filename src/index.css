@@ -1273,12 +1273,46 @@ p {
 
 .mini-game {
   width: min(1200px, calc(100% - 36px));
-  margin: 0 auto 64px;
+  margin: 0 auto 18px;
   padding: 20px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
   box-shadow: 0 18px 60px rgba(0, 0, 0, 0.14);
+}
+
+.bottom-language-panel {
+  width: min(1200px, calc(100% - 36px));
+  min-height: 58px;
+  margin: 0 auto 64px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(236, 246, 241, 0.86);
+  color: var(--ink);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+}
+
+.bottom-language-panel span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.bottom-language-panel button {
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .goal-box {
@@ -1828,9 +1862,14 @@ p {
   }
 
   .game-options,
-  .game-status {
+  .game-status,
+  .bottom-language-panel {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .bottom-language-panel button {
+    width: 100%;
   }
 
   .assistant-row,
