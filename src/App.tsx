@@ -25,6 +25,7 @@ type AccessMode = 'guest' | 'user' | null;
 type AuthMode = 'signin' | 'signup';
 type MatchFilter = 'all' | 'live' | 'high' | 'upset';
 type ThemeMode = 'light' | 'dark' | 'bmw-m' | 'lamborghini' | 'bugatti';
+type LanguageMode = 'en' | 'ru';
 type GameDifficulty = 'easy' | 'normal' | 'hard';
 type GroupStanding = {
   group: string;
@@ -111,6 +112,81 @@ const groupStandings: GroupStanding[] = [
   ] },
 ];
 
+const copy = {
+  en: {
+    startTitle: 'Match predictions, groups, and AI analysis in one place.',
+    startText: 'Watch upcoming matches, predicted scores, win chances, and AI explanations. Sign in or open the site as a guest.',
+    feedTitle: 'Real match feed',
+    feedText: 'ScoreGPT predictions are stored in Supabase and update from that source.',
+    forecastTitle: 'AI forecast',
+    forecastText: 'See pick, projected score, confidence, risk, and win chances.',
+    askTitle: 'Ask about the match',
+    askText: 'Chat about players, injuries, form, tactics, draw risk, or upsets.',
+    note: 'No fake old matches: if real data is missing, the site shows an error instead of a demo.',
+    startHere: 'Start here',
+    authTitle: 'Save picks or enter as guest',
+    authText: 'Account mode syncs your predictions. Guest mode opens the full site immediately.',
+    signIn: 'Sign in',
+    signUp: 'Register',
+    password: 'Password',
+    wait: 'Please wait...',
+    createAccount: 'Create account',
+    google: 'Continue with Google',
+    guest: 'Enter as guest',
+    liveMatches: 'Live matches',
+    aiModels: 'AI models',
+    groups: 'Groups',
+    profile: 'Profile',
+    themes: 'Themes',
+    account: 'Account',
+    dark: 'Dark',
+    light: 'Light',
+    heroEyebrow: 'Realtime World Cup predictions',
+    heroTitle: 'Next matches predicted live from Supabase.',
+    heroText: 'Watch upcoming fixtures, AI consensus picks, projected scores, and model confidence update instantly when prediction rows change in the database.',
+    nextMatches: 'next matches',
+    dataSource: 'data source',
+    avgConfidence: 'avg confidence',
+    languageButton: 'RU',
+  },
+  ru: {
+    startTitle: 'Прогнозы матчей, группы и AI-анализ в одном месте.',
+    startText: 'Смотри ближайшие матчи, прогноз счёта, шансы победы и объяснение от AI. Можно войти или открыть сайт как гость.',
+    feedTitle: 'Реальные матчи',
+    feedText: 'Прогнозы ScoreGPT сохраняются в Supabase и обновляются оттуда.',
+    forecastTitle: 'AI-прогноз',
+    forecastText: 'Смотри фаворита, счёт, уверенность, риск и шансы победы.',
+    askTitle: 'Спроси про матч',
+    askText: 'Можно спросить про игроков, травмы, форму, тактику, ничью или апсет.',
+    note: 'Старые фейковые матчи не показываются: если данных нет, сайт показывает ошибку.',
+    startHere: 'Начать здесь',
+    authTitle: 'Сохраняй прогнозы или зайди гостем',
+    authText: 'Аккаунт синхронизирует прогнозы. Гость сразу открывает сайт.',
+    signIn: 'Войти',
+    signUp: 'Регистрация',
+    password: 'Пароль',
+    wait: 'Подождите...',
+    createAccount: 'Создать аккаунт',
+    google: 'Войти через Google',
+    guest: 'Войти как гость',
+    liveMatches: 'Матчи',
+    aiModels: 'AI модели',
+    groups: 'Группы',
+    profile: 'Профиль',
+    themes: 'Темы',
+    account: 'Аккаунт',
+    dark: 'Тёмная',
+    light: 'Светлая',
+    heroEyebrow: 'Прогнозы ЧМ в реальном времени',
+    heroTitle: 'Ближайшие матчи с live AI-прогнозом.',
+    heroText: 'Смотри матчи, выбор AI, прогноз счёта и уверенность модели. Данные обновляются, когда меняются строки в Supabase.',
+    nextMatches: 'матчей',
+    dataSource: 'источник',
+    avgConfidence: 'средняя уверенность',
+    languageButton: 'EN',
+  },
+} as const;
+
 function formatMatchDate(value: string) {
   return new Intl.DateTimeFormat('en', {
     month: 'short',
@@ -142,7 +218,16 @@ function isUpsetCandidate(prediction: WorldCupPrediction) {
   return prediction.confidence <= 58 || favoriteEdge <= 12 || prediction.draw >= 27;
 }
 
-function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) => void }) {
+function StartScreen({
+  languageMode,
+  onEnter,
+  onToggleLanguage,
+}: {
+  languageMode: LanguageMode;
+  onEnter: (mode: Exclude<AccessMode, null>) => void;
+  onToggleLanguage: () => void;
+}) {
+  const text = copy[languageMode];
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -219,32 +304,32 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
       }}
     >
       <section className="start-panel">
+        <button className="language-toggle start-language-toggle" onClick={onToggleLanguage} type="button">
+          {text.languageButton}
+        </button>
         <div className="start-copy">
           <p className="eyebrow">AI World Cup Predictor 2026</p>
-          <h1>Прогнозы матчей, группы и AI-анализ в одном месте.</h1>
-          <p>
-            Смотри ближайшие матчи, прогнозируемый счет, вероятность победы и объяснение от AI.
-            Можно войти в аккаунт или открыть сайт как гость.
-          </p>
+          <h1>{text.startTitle}</h1>
+          <p>{text.startText}</p>
           <div className="start-quick-guide" aria-label="30 second site guide">
             <article>
               <span>1</span>
-              <strong>Real match feed</strong>
-              <small>ScoreGPT predictions are stored in Supabase and update from that source.</small>
+              <strong>{text.feedTitle}</strong>
+              <small>{text.feedText}</small>
             </article>
             <article>
               <span>2</span>
-              <strong>AI forecast</strong>
-              <small>See pick, projected score, confidence, risk, and win chances.</small>
+              <strong>{text.forecastTitle}</strong>
+              <small>{text.forecastText}</small>
             </article>
             <article>
               <span>3</span>
-              <strong>Ask about the match</strong>
-              <small>Chat about players, injuries, form, tactics, draw risk, or upsets.</small>
+              <strong>{text.askTitle}</strong>
+              <small>{text.askText}</small>
             </article>
           </div>
           <p className="start-data-note">
-            No fake old matches: if real data is missing, the site shows an error instead of a demo.
+            {text.note}
           </p>
           <div className="start-features">
             <span>Real data only</span>
@@ -256,9 +341,9 @@ function StartScreen({ onEnter }: { onEnter: (mode: Exclude<AccessMode, null>) =
 
         <form className="auth-box" onSubmit={handleAuth}>
           <div className="auth-intro">
-            <span>Start here</span>
-            <strong>Save picks or enter as guest</strong>
-            <p>Account mode syncs your predictions. Guest mode opens the full site immediately.</p>
+            <span>{text.startHere}</span>
+            <strong>{text.authTitle}</strong>
+            <p>{text.authText}</p>
           </div>
           <div className="auth-tabs">
             <button
@@ -1049,6 +1134,10 @@ function App() {
       ? savedTheme
       : 'light';
   });
+  const [languageMode, setLanguageMode] = useState<LanguageMode>(() => (
+    window.localStorage.getItem('language-mode') === 'ru' ? 'ru' : 'en'
+  ));
+  const text = copy[languageMode];
   const [predictions, setPredictions] = useState<WorldCupPrediction[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [isLive, setIsLive] = useState(false);
@@ -1101,6 +1190,11 @@ function App() {
   }, [themeMode]);
 
   useEffect(() => {
+    document.documentElement.lang = languageMode;
+    window.localStorage.setItem('language-mode', languageMode);
+  }, [languageMode]);
+
+  useEffect(() => {
     void refreshPredictions();
     return subscribeToPredictions(() => {
       void refreshPredictions();
@@ -1127,9 +1221,16 @@ function App() {
     .sort((a, b) => a.confidence - b.confidence)[0] ?? null;
   const groups = groupStandings.filter((group) => ['A', 'E', 'I', 'L'].includes(group.group));
   const soonMatch = getSoonMatch(displayPredictions);
+  const toggleLanguage = () => setLanguageMode((current) => current === 'en' ? 'ru' : 'en');
 
   if (!accessMode) {
-    return <StartScreen onEnter={setAccessMode} />;
+    return (
+      <StartScreen
+        languageMode={languageMode}
+        onEnter={setAccessMode}
+        onToggleLanguage={toggleLanguage}
+      />
+    );
   }
 
   if (!selectedPrediction) {
@@ -1150,26 +1251,29 @@ function App() {
           <nav className="topbar" aria-label="Primary navigation">
             <strong>ScoreAI 2026</strong>
             <div>
-              <a href="#matches">Live matches</a>
-              <a href="#groups">Groups</a>
-              <a href="/profile.html">Profile</a>
-              <a href="/themes.html">Themes</a>
+              <a href="#matches">{text.liveMatches}</a>
+              <a href="#groups">{text.groups}</a>
+              <a href="/profile.html">{text.profile}</a>
+              <a href="/themes.html">{text.themes}</a>
               <button className="topbar-action" onClick={() => setAccessMode(null)} type="button">
-                {accessMode === 'guest' ? 'Guest' : 'Account'}
+                {accessMode === 'guest' ? 'Guest' : text.account}
+              </button>
+              <button className="topbar-action language-toggle" onClick={toggleLanguage} type="button">
+                {text.languageButton}
               </button>
               <button
                 className="topbar-action"
                 onClick={() => setThemeMode((current) => current === 'light' ? 'dark' : 'light')}
                 type="button"
               >
-                {themeMode === 'light' ? 'Dark' : 'Light'}
+                {themeMode === 'light' ? text.dark : text.light}
               </button>
             </div>
           </nav>
 
           <div className="hero__content">
-            <p className="eyebrow">Realtime World Cup predictions</p>
-            <h1>Only real match data is shown.</h1>
+            <p className="eyebrow">{text.heroEyebrow}</p>
+            <h1>{text.heroTitle}</h1>
             <p className="hero__copy">
               ScoreGPT predictions are loaded from Supabase. If the feed has no current rows,
               the site shows an error instead of a fake demo prediction.
@@ -1177,11 +1281,11 @@ function App() {
             <div className="hero__stats" aria-label="Prediction summary">
               <div>
                 <span>0</span>
-                <small>next matches</small>
+                <small>{text.nextMatches}</small>
               </div>
               <div>
                 <span>{isLoadingPredictions ? 'Checking' : 'Error'}</span>
-                <small>data source</small>
+                <small>{text.dataSource}</small>
               </div>
               <div>
                 <span>Real</span>
@@ -1236,43 +1340,43 @@ function App() {
         <nav className="topbar" aria-label="Primary navigation">
           <strong>ScoreAI 2026</strong>
           <div>
-            <a href="#matches">Live matches</a>
-            <a href="#models">AI models</a>
-            <a href="#groups">Groups</a>
-            <a href="/profile.html">Profile</a>
-            <a href="/themes.html">Themes</a>
+            <a href="#matches">{text.liveMatches}</a>
+            <a href="#models">{text.aiModels}</a>
+            <a href="#groups">{text.groups}</a>
+            <a href="/profile.html">{text.profile}</a>
+            <a href="/themes.html">{text.themes}</a>
             <button className="topbar-action" onClick={() => setAccessMode(null)} type="button">
-              {accessMode === 'guest' ? 'Guest' : 'Account'}
+              {accessMode === 'guest' ? 'Guest' : text.account}
+            </button>
+            <button className="topbar-action language-toggle" onClick={toggleLanguage} type="button">
+              {text.languageButton}
             </button>
             <button
               className="topbar-action"
               onClick={() => setThemeMode((current) => current === 'light' ? 'dark' : 'light')}
               type="button"
             >
-              {themeMode === 'light' ? 'Dark' : 'Light'}
+              {themeMode === 'light' ? text.dark : text.light}
             </button>
           </div>
         </nav>
 
         <div className="hero__content">
-          <p className="eyebrow">Realtime World Cup predictions</p>
-          <h1>Next matches predicted live from Supabase.</h1>
-          <p className="hero__copy">
-            Watch upcoming fixtures, AI consensus picks, projected scores, and model confidence update
-            instantly when prediction rows change in the database.
-          </p>
+          <p className="eyebrow">{text.heroEyebrow}</p>
+          <h1>{text.heroTitle}</h1>
+          <p className="hero__copy">{text.heroText}</p>
           <div className="hero__stats" aria-label="Prediction summary">
             <div>
               <span>{displayPredictions.length}</span>
-              <small>next matches</small>
+              <small>{text.nextMatches}</small>
             </div>
             <div>
               <span>{isLive ? 'Live' : 'Real'}</span>
-              <small>data source</small>
+              <small>{text.dataSource}</small>
             </div>
             <div>
               <span>{averageConfidence}%</span>
-              <small>avg confidence</small>
+              <small>{text.avgConfidence}</small>
             </div>
           </div>
         </div>
