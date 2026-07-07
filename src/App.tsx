@@ -147,6 +147,8 @@ const copy = {
     nextMatches: 'next matches',
     dataSource: 'data source',
     avgConfidence: 'avg confidence',
+    matchSoon: 'Match soon',
+    aiPick: 'AI pick',
     languageButton: 'RU',
   },
   ru: {
@@ -183,6 +185,8 @@ const copy = {
     nextMatches: 'матчей',
     dataSource: 'источник',
     avgConfidence: 'средняя уверенность',
+    matchSoon: 'Скоро матч',
+    aiPick: 'Выбор AI',
     languageButton: 'EN',
   },
 } as const;
@@ -1390,9 +1394,9 @@ function App() {
 
       {soonMatch && (
         <section className="soon-alert">
-          <span>Match soon</span>
+          <span>{text.matchSoon}</span>
           <strong>{soonMatch.homeCode} vs {soonMatch.awayCode}</strong>
-          <small>{formatMatchDate(soonMatch.matchTime)} / AI pick {soonMatch.consensusPick}</small>
+          <small>{formatMatchDate(soonMatch.matchTime)} / {text.aiPick} {soonMatch.consensusPick}</small>
         </section>
       )}
 
