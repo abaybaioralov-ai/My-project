@@ -112,8 +112,61 @@ const groupStandings: GroupStanding[] = [
   ] },
 ];
 
+const ruTeamNames: Record<string, string> = {
+  Algeria: 'Алжир',
+  Argentina: 'Аргентина',
+  Australia: 'Австралия',
+  Austria: 'Австрия',
+  Belgium: 'Бельгия',
+  'Bosnia & Herzegovina': 'Босния и Герцеговина',
+  Brazil: 'Бразилия',
+  Canada: 'Канада',
+  'Cape Verde': 'Кабо-Верде',
+  Colombia: 'Колумбия',
+  Croatia: 'Хорватия',
+  Curacao: 'Кюрасао',
+  'Czech Republic': 'Чехия',
+  'D.R. Congo': 'ДР Конго',
+  Ecuador: 'Эквадор',
+  Egypt: 'Египет',
+  England: 'Англия',
+  France: 'Франция',
+  Germany: 'Германия',
+  Ghana: 'Гана',
+  Haiti: 'Гаити',
+  Iran: 'Иран',
+  Iraq: 'Ирак',
+  'Ivory Coast': 'Кот-д’Ивуар',
+  Japan: 'Япония',
+  Jordan: 'Иордания',
+  Mexico: 'Мексика',
+  Morocco: 'Марокко',
+  Netherlands: 'Нидерланды',
+  'New Zealand': 'Новая Зеландия',
+  Norway: 'Норвегия',
+  Panama: 'Панама',
+  Paraguay: 'Парагвай',
+  Portugal: 'Португалия',
+  Qatar: 'Катар',
+  'Saudi Arabia': 'Саудовская Аравия',
+  Scotland: 'Шотландия',
+  Senegal: 'Сенегал',
+  'South Africa': 'ЮАР',
+  'South Korea': 'Южная Корея',
+  Spain: 'Испания',
+  Sweden: 'Швеция',
+  Switzerland: 'Швейцария',
+  Tunisia: 'Тунис',
+  Turkey: 'Турция',
+  Uruguay: 'Уругвай',
+  USA: 'США',
+  Uzbekistan: 'Узбекистан',
+};
+
 const copy = {
   en: {
+    dateLocale: 'en-US',
+    versus: 'vs',
     startTitle: 'Match predictions, groups, and AI analysis in one place.',
     startText: 'Watch upcoming matches, predicted scores, win chances, and AI explanations. Sign in or open the site as a guest.',
     feedTitle: 'Real match feed',
@@ -149,9 +202,132 @@ const copy = {
     avgConfidence: 'avg confidence',
     matchSoon: 'Match soon',
     aiPick: 'AI pick',
+    realtimeFeed: 'Realtime feed',
+    connected: 'Connected',
+    realOnly: 'Real only',
+    all: 'All',
+    live: 'Live',
+    upcoming: 'Upcoming',
+    highConfidence: 'High confidence',
+    upsetAlert: 'Upset alert',
+    noMatchesFilter: 'No matches in this filter yet.',
+    home: 'Home',
+    away: 'Away',
+    draw: 'Draw',
+    aiConsensus: 'AI consensus',
+    projectedScore: 'Projected score',
+    aiRead: 'AI read',
+    source: 'Source',
+    updated: 'Updated',
+    modelPrediction: 'Model prediction',
+    score: 'Score',
+    confidence: 'Confidence',
+    confidenceLevel: 'Confidence level',
+    medium: 'Medium',
+    risky: 'Risky',
+    updatesWhenSupabase: 'Updates when Supabase row changes',
+    liveNow: 'Live now',
+    matchesMarkedLive: 'Matches marked as live in Supabase.',
+    bestValue: 'Best value',
+    highestConsensus: 'Highest consensus probability for the selected match.',
+    keyGroups: 'Key groups',
+    group: 'Group',
+    team: 'Team',
+    playedPoints: 'P / Pts',
+    bottomLanguage: 'Site language',
+    switchLanguage: 'Switch to Russian',
+    realDataOnly: 'Real data only',
+    playerContext: 'Player context',
+    aiMatchChat: 'AI match chat',
+    penaltyGame: 'Penalty game',
+    accountCreated: 'Account created. You can sign in now.',
+    googleDisabled: 'Google sign-in is not enabled in the Supabase project used by this site.',
+    googleCheckFailed: 'Could not check Google sign-in. Try again.',
+    aiAssistant: 'AI assistant',
+    predictionAdvisor: 'Prediction advisor',
+    analyzeMatch: 'Analyze match',
+    analyzing: 'Analyzing',
+    risk: 'Risk',
+    high: 'High',
+    normal: 'Normal',
+    pressAnalyze: 'Press Analyze match to get a full AI decision guide',
+    askPlaceholder: 'Ask about chances, risk, draw, or predicted score',
+    send: 'Send',
+    internetCheck: 'Internet check',
+    decisionContext: 'Decision context',
+    refresh: 'Refresh',
+    searching: 'Searching',
+    contextDefault: 'Press refresh to pull current web context for this match.',
+    contextSearching: 'Searching the internet and checking sources...',
+    contextUpdated: 'Updated with internet-grounded context.',
+    contextUnavailable: 'Internet context is unavailable. Showing local decision checklist.',
+    contextAdded: 'Internet context added to the AI forecast.',
+    contextSavedOnly: 'Internet context unavailable. Forecast uses saved match data only.',
+    contextFallback1: 'Could not reach the internet context service yet.',
+    contextFallback3: 'Check team news, injuries, travel, and confirmed lineups before making a final choice.',
+    finalPick: 'Final pick',
+    winningChances: 'Winning chances',
+    riskLevel: 'Risk level',
+    decisionNote: 'Decision note',
+    mediumHighRisk: 'medium/high because the edge is narrow or confidence is limited',
+    mediumLowRisk: 'medium/low because the model has a clearer favorite',
+    checking: 'Checking',
+    error: 'Error',
+    real: 'Real',
+    dataMode: 'data mode',
+    noRealMatches: 'No real matches loaded',
+    checkingPredictions: 'Checking current ScoreGPT predictions from Supabase...',
+    noCurrentPredictions: 'No current ScoreGPT predictions are available right now.',
+    refreshRealData: 'Refresh real data',
+    matchPage: 'Match page',
+    details: 'Details',
+    venue: 'Venue',
+    kickoff: 'Kickoff',
+    modelsAgree: 'Models agree',
+    status: 'Status',
+    myPrediction: 'My prediction',
+    yourScore: 'Your score',
+    shortNote: 'Short note',
+    save: 'Save',
+    saving: 'Saving',
+    savedGuest: 'Saved on this device as guest.',
+    savedAccount: 'Saved to your account.',
+    couldNotLoadPrediction: 'Could not load your saved prediction.',
+    couldNotSavePrediction: 'Could not save prediction.',
+    miniGame: 'Mini game',
+    penaltyShootout: 'Penalty shootout',
+    goals: 'goals',
+    sound: 'Sound',
+    on: 'On',
+    off: 'Off',
+    reset: 'Reset',
+    shot: 'Shot',
+    of: 'of',
+    target: 'target',
+    restarting: 'Restarting...',
+    gameReady: 'Move the cursor inside the goal and click to shoot.',
+    gameGoal: 'Goal. Clean finish.',
+    gameSaved: 'Saved. The keeper reached it.',
+    seriesComplete: 'Series complete',
+    newRoundAuto: 'New round starts automatically.',
+    newRound: 'New round.',
+    easy: 'Easy',
+    hard: 'Hard',
+    askAi: 'Ask AI',
+    colorLegend: 'Color guide',
+    legendData: 'Real data',
+    legendFavorite: 'Favorite',
+    legendRisk: 'Risk',
+    legendAi: 'AI analysis',
+    demoMatch: 'Portugal vs Spain',
+    demoPick: 'AI pick: Portugal',
+    demoScore: 'Projected score 2-1',
+    demoConfidence: 'Confidence 62%',
     languageButton: 'RU',
   },
   ru: {
+    dateLocale: 'ru-RU',
+    versus: 'против',
     startTitle: 'Прогнозы матчей, группы и AI-анализ в одном месте.',
     startText: 'Смотри ближайшие матчи, прогноз счёта, шансы победы и объяснение от AI. Можно войти или открыть сайт как гость.',
     feedTitle: 'Реальные матчи',
@@ -187,12 +363,135 @@ const copy = {
     avgConfidence: 'средняя уверенность',
     matchSoon: 'Скоро матч',
     aiPick: 'Выбор AI',
+    realtimeFeed: 'Лента матчей',
+    connected: 'Подключено',
+    realOnly: 'Только реальные',
+    all: 'Все',
+    live: 'Live',
+    upcoming: 'Скоро',
+    highConfidence: 'Высокая уверенность',
+    upsetAlert: 'Апсет',
+    noMatchesFilter: 'В этом фильтре пока нет матчей.',
+    home: 'Хозяева',
+    away: 'Гости',
+    draw: 'Ничья',
+    aiConsensus: 'Выбор AI',
+    projectedScore: 'Прогноз счёта',
+    aiRead: 'AI-анализ',
+    source: 'Источник',
+    updated: 'Обновлено',
+    modelPrediction: 'Прогноз модели',
+    score: 'Счёт',
+    confidence: 'Уверенность',
+    confidenceLevel: 'Уровень уверенности',
+    medium: 'Средний',
+    risky: 'Риск',
+    updatesWhenSupabase: 'Обновляется при изменении строки в Supabase',
+    liveNow: 'Live сейчас',
+    matchesMarkedLive: 'Матчи, отмеченные как live в Supabase.',
+    bestValue: 'Лучший выбор',
+    highestConsensus: 'Самая высокая вероятность по выбранному матчу.',
+    keyGroups: 'Главные группы',
+    group: 'Группа',
+    team: 'Команда',
+    playedPoints: 'И / Очки',
+    bottomLanguage: 'Язык сайта',
+    switchLanguage: 'Switch to English',
+    realDataOnly: 'Только реальные данные',
+    playerContext: 'Контекст игроков',
+    aiMatchChat: 'AI-чат по матчу',
+    penaltyGame: 'Игра пенальти',
+    accountCreated: 'Аккаунт создан. Теперь можно войти.',
+    googleDisabled: 'Google-вход пока не включен в Supabase-проекте этого сайта.',
+    googleCheckFailed: 'Не удалось проверить Google-вход. Попробуй еще раз.',
+    aiAssistant: 'AI-помощник',
+    predictionAdvisor: 'Советник по прогнозу',
+    analyzeMatch: 'Разобрать матч',
+    analyzing: 'Анализ...',
+    risk: 'Риск',
+    high: 'Высокий',
+    normal: 'Обычный',
+    pressAnalyze: 'Нажми «Разобрать матч», чтобы получить полный AI-разбор',
+    askPlaceholder: 'Спроси про шансы, риск, ничью или счет',
+    send: 'Отправить',
+    internetCheck: 'Проверка интернета',
+    decisionContext: 'Контекст решения',
+    refresh: 'Обновить',
+    searching: 'Поиск',
+    contextDefault: 'Нажми обновить, чтобы подтянуть свежий контекст по матчу.',
+    contextSearching: 'Ищу информацию в интернете и проверяю источники...',
+    contextUpdated: 'Обновлено с учетом интернет-контекста.',
+    contextUnavailable: 'Интернет-контекст недоступен. Показываю локальный чеклист.',
+    contextAdded: 'Интернет-контекст добавлен в AI-прогноз.',
+    contextSavedOnly: 'Интернет-контекст недоступен. Прогноз использует только сохраненные данные матча.',
+    contextFallback1: 'Пока не удалось получить интернет-контекст.',
+    contextFallback3: 'Перед финальным выбором проверь новости команд, травмы, перелеты и составы.',
+    finalPick: 'Итоговый выбор',
+    winningChances: 'Шансы',
+    riskLevel: 'Уровень риска',
+    decisionNote: 'Заметка',
+    mediumHighRisk: 'средний/высокий, потому что преимущество небольшое или уверенность ограничена',
+    mediumLowRisk: 'средний/низкий, потому что у модели есть более явный фаворит',
+    checking: 'Проверка',
+    error: 'Ошибка',
+    real: 'Реальные',
+    dataMode: 'режим данных',
+    noRealMatches: 'Реальные матчи не загружены',
+    checkingPredictions: 'Проверяю текущие прогнозы ScoreGPT из Supabase...',
+    noCurrentPredictions: 'Сейчас нет актуальных прогнозов ScoreGPT.',
+    refreshRealData: 'Обновить реальные данные',
+    matchPage: 'Страница матча',
+    details: 'Детали',
+    venue: 'Стадион',
+    kickoff: 'Начало',
+    modelsAgree: 'Согласие моделей',
+    status: 'Статус',
+    myPrediction: 'Мой прогноз',
+    yourScore: 'Твой счет',
+    shortNote: 'Короткая заметка',
+    save: 'Сохранить',
+    saving: 'Сохранение',
+    savedGuest: 'Сохранено на этом устройстве как гость.',
+    savedAccount: 'Сохранено в аккаунт.',
+    couldNotLoadPrediction: 'Не удалось загрузить сохраненный прогноз.',
+    couldNotSavePrediction: 'Не удалось сохранить прогноз.',
+    miniGame: 'Мини-игра',
+    penaltyShootout: 'Серия пенальти',
+    goals: 'голов',
+    sound: 'Звук',
+    on: 'Вкл',
+    off: 'Выкл',
+    reset: 'Сброс',
+    shot: 'Удар',
+    of: 'из',
+    target: 'цель',
+    restarting: 'Перезапуск...',
+    gameReady: 'Наведи курсор внутри ворот и кликни, чтобы ударить.',
+    gameGoal: 'Гол. Чистый удар.',
+    gameSaved: 'Сейв. Вратарь достал мяч.',
+    seriesComplete: 'Серия завершена',
+    newRoundAuto: 'Новый раунд начнется автоматически.',
+    newRound: 'Новый раунд.',
+    easy: 'Легко',
+    hard: 'Сложно',
+    askAi: 'Спросить AI',
+    colorLegend: 'Цвета блоков',
+    legendData: 'Реальные данные',
+    legendFavorite: 'Фаворит',
+    legendRisk: 'Риск',
+    legendAi: 'AI-анализ',
+    demoMatch: 'Португалия против Испания',
+    demoPick: 'Выбор AI: Португалия',
+    demoScore: 'Прогноз счёта 2-1',
+    demoConfidence: 'Уверенность 62%',
     languageButton: 'EN',
   },
 } as const;
 
-function formatMatchDate(value: string) {
-  return new Intl.DateTimeFormat('en', {
+type UiCopy = (typeof copy)[LanguageMode];
+
+function formatMatchDate(value: string, locale = 'en-US') {
+  return new Intl.DateTimeFormat(locale, {
     month: 'short',
     day: '2-digit',
     hour: '2-digit',
@@ -208,6 +507,28 @@ function isFutureMatch(prediction: WorldCupPrediction) {
   return prediction.status === 'live' || new Date(prediction.matchTime).getTime() >= Date.now();
 }
 
+function formatMatchStatus(status: WorldCupPrediction['status'], text: UiCopy) {
+  if (status === 'live') return text.live;
+  if (status === 'upcoming') return text.upcoming;
+  return status;
+}
+
+function formatStage(stage: string, text: UiCopy) {
+  return stage.replace(/^Group\b/i, text.group);
+}
+
+function formatTeamName(name: string, languageMode: LanguageMode) {
+  return languageMode === 'ru' ? ruTeamNames[name] ?? name : name;
+}
+
+function formatMatchLabel(prediction: WorldCupPrediction, languageMode: LanguageMode, text: UiCopy) {
+  if (languageMode === 'ru') {
+    return `${formatTeamName(prediction.homeName, languageMode)} ${text.versus} ${formatTeamName(prediction.awayName, languageMode)}`;
+  }
+
+  return `${prediction.homeCode} ${text.versus} ${prediction.awayCode}`;
+}
+
 function getSoonMatch(predictions: WorldCupPrediction[]) {
   return predictions
     .filter((prediction) => {
@@ -220,6 +541,23 @@ function getSoonMatch(predictions: WorldCupPrediction[]) {
 function isUpsetCandidate(prediction: WorldCupPrediction) {
   const favoriteEdge = Math.max(prediction.homeWin, prediction.awayWin) - Math.min(prediction.homeWin, prediction.awayWin);
   return prediction.confidence <= 58 || favoriteEdge <= 12 || prediction.draw >= 27;
+}
+
+function getConfidenceBadge(prediction: WorldCupPrediction, text: UiCopy) {
+  if (isUpsetCandidate(prediction) || prediction.confidence < 58) {
+    return { className: 'is-risky', label: text.risky };
+  }
+
+  if (prediction.confidence >= 68) {
+    return { className: 'is-high', label: text.high };
+  }
+
+  return { className: 'is-medium', label: text.medium };
+}
+
+function splitScore(score: string) {
+  const [home = '-', away = '-'] = score.split('-').map((part) => part.trim());
+  return { home, away };
 }
 
 function StartScreen({
@@ -259,7 +597,7 @@ function StartScreen({
       return;
     }
 
-    setMessage('Аккаунт создан. Теперь можно войти.');
+    setMessage(text.accountCreated);
     setAuthMode('signin');
     setIsBusy(false);
   }
@@ -277,12 +615,12 @@ function StartScreen({
       const settings = await settingsResponse.json();
 
       if (!settings?.external?.google) {
-        setMessage('Google вход пока не включен в Supabase проекте, который использует этот сайт.');
+        setMessage(text.googleDisabled);
         setIsBusy(false);
         return;
       }
     } catch {
-      setMessage('Не удалось проверить Google вход. Попробуй еще раз.');
+      setMessage(text.googleCheckFailed);
       setIsBusy(false);
       return;
     }
@@ -315,6 +653,16 @@ function StartScreen({
           <p className="eyebrow">AI World Cup Predictor 2026</p>
           <h1>{text.startTitle}</h1>
           <p>{text.startText}</p>
+          <div className="welcome-demo-card" aria-label="Example prediction">
+            <div>
+              <span>{text.demoMatch}</span>
+              <strong>{text.demoScore}</strong>
+            </div>
+            <div>
+              <small>{text.demoPick}</small>
+              <small>{text.demoConfidence}</small>
+            </div>
+          </div>
           <div className="start-quick-guide" aria-label="30 second site guide">
             <article>
               <span>1</span>
@@ -336,10 +684,10 @@ function StartScreen({
             {text.note}
           </p>
           <div className="start-features">
-            <span>Real data only</span>
-            <span>Player context</span>
-            <span>AI match chat</span>
-            <span>Penalty game</span>
+            <span>{text.realDataOnly}</span>
+            <span>{text.playerContext}</span>
+            <span>{text.aiMatchChat}</span>
+            <span>{text.penaltyGame}</span>
           </div>
         </div>
 
@@ -355,14 +703,14 @@ function StartScreen({
               onClick={() => setAuthMode('signin')}
               type="button"
             >
-              Войти
+              {text.signIn}
             </button>
             <button
               className={authMode === 'signup' ? 'is-active' : ''}
               onClick={() => setAuthMode('signup')}
               type="button"
             >
-              Регистрация
+              {text.signUp}
             </button>
           </div>
 
@@ -382,14 +730,14 @@ function StartScreen({
           </label>
 
           <button className="primary-auth" disabled={isBusy} type="submit">
-            {isBusy ? 'Подождите...' : authMode === 'signin' ? 'Войти' : 'Создать аккаунт'}
+            {isBusy ? text.wait : authMode === 'signin' ? text.signIn : text.createAccount}
           </button>
           <button className="google-auth" disabled={isBusy} onClick={handleGoogleSignIn} type="button">
             <span>G</span>
-            Войти через Google
+            {text.google}
           </button>
           <button className="guest-auth" onClick={() => onEnter('guest')} type="button">
-            Войти как гость
+            {text.guest}
           </button>
 
           {message && <p className="auth-message">{message}</p>}
@@ -399,7 +747,15 @@ function StartScreen({
   );
 }
 
-function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
+function MatchAssistant({
+  languageMode,
+  prediction,
+  text,
+}: {
+  languageMode: LanguageMode;
+  prediction: WorldCupPrediction;
+  text: UiCopy;
+}) {
   const [question, setQuestion] = useState('');
   const [analysis, setAnalysis] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -413,19 +769,21 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
 
   async function analyzeMatch(customQuestion = '') {
     setIsAnalyzing(true);
-    setContextMessage('Checking internet context, player news, and team form...');
+    setContextMessage(text.contextSearching);
 
     let groundedContext: InternetContext | null = null;
+    const responseLanguage = text.dateLocale === 'ru-RU' ? 'Russian' : 'English';
 
     try {
       groundedContext = await loadInternetContext(prediction);
-      setContextMessage('Internet context added to the AI forecast.');
+      setContextMessage(text.contextAdded);
     } catch {
-      setContextMessage('Internet context unavailable. Forecast uses saved match data only.');
+      setContextMessage(text.contextSavedOnly);
     }
 
     const prompt = [
       'You are a football match prediction assistant.',
+      `Answer in ${responseLanguage}.`,
       `Match: ${prediction.homeName} (${prediction.homeCode}) vs ${prediction.awayName} (${prediction.awayCode})`,
       `Kickoff: ${prediction.matchTime}`,
       `Venue: ${prediction.venue}`,
@@ -468,14 +826,14 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
       setAnalysis(data.text);
     } catch {
       const risk = isUpsetCandidate(prediction)
-        ? 'Risk level: medium/high because the edge is narrow or confidence is limited.'
-        : 'Risk level: medium/low because the model has a clearer favorite.';
+        ? `${text.riskLevel}: ${text.mediumHighRisk}.`
+        : `${text.riskLevel}: ${text.mediumLowRisk}.`;
       setAnalysis([
-        `Final pick: ${prediction.consensusPick}.`,
-        `Winning chances: ${prediction.homeCode} ${prediction.homeWin.toFixed(1)}%, draw ${prediction.draw.toFixed(1)}%, ${prediction.awayCode} ${prediction.awayWin.toFixed(1)}%.`,
-        `Projected score: ${prediction.predictedScore}.`,
+        `${text.finalPick}: ${prediction.consensusPick}.`,
+        `${text.winningChances}: ${prediction.homeCode} ${prediction.homeWin.toFixed(1)}%, ${text.draw.toLowerCase()} ${prediction.draw.toFixed(1)}%, ${prediction.awayCode} ${prediction.awayWin.toFixed(1)}%.`,
+        `${text.projectedScore}: ${prediction.predictedScore}.`,
         risk,
-        `Decision note: ${prediction.aiSummary}`,
+        `${text.decisionNote}: ${prediction.aiSummary}`,
       ].join('\n'));
     } finally {
       setIsAnalyzing(false);
@@ -490,24 +848,24 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
   }
 
   return (
-    <section className="match-assistant" aria-label="AI match assistant">
+    <section className="match-assistant" id="ai-assistant" aria-label="AI match assistant">
       <div className="section-title compact">
         <div>
-          <p>AI assistant</p>
-          <h2>Prediction advisor</h2>
+          <p>{text.aiAssistant}</p>
+          <h2>{text.predictionAdvisor}</h2>
         </div>
         <button disabled={isAnalyzing} onClick={() => analyzeMatch()} type="button">
-          {isAnalyzing ? 'Analyzing' : 'Analyze match'}
+          {isAnalyzing ? text.analyzing : text.analyzeMatch}
         </button>
       </div>
 
       <div className="advisor-grid">
         <div>
-          <span>AI pick</span>
+          <span>{text.aiPick}</span>
           <strong>{prediction.consensusPick}</strong>
         </div>
         <div>
-          <span>Score</span>
+          <span>{text.score}</span>
           <strong>{prediction.predictedScore}</strong>
         </div>
         <div>
@@ -515,7 +873,7 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
           <strong>{prediction.homeWin.toFixed(1)}%</strong>
         </div>
         <div>
-          <span>Draw</span>
+          <span>{text.draw}</span>
           <strong>{prediction.draw.toFixed(1)}%</strong>
         </div>
         <div>
@@ -523,58 +881,58 @@ function MatchAssistant({ prediction }: { prediction: WorldCupPrediction }) {
           <strong>{prediction.awayWin.toFixed(1)}%</strong>
         </div>
         <div>
-          <span>Risk</span>
-          <strong>{isUpsetCandidate(prediction) ? 'High' : 'Normal'}</strong>
+          <span>{text.risk}</span>
+          <strong>{isUpsetCandidate(prediction) ? text.high : text.normal}</strong>
         </div>
       </div>
 
       <p className="advisor-text">
-        {analysis || `Press Analyze match to get a full AI decision guide for ${prediction.homeCode} vs ${prediction.awayCode}.`}
+        {analysis || `${text.pressAnalyze} ${formatTeamName(prediction.homeName, languageMode)} ${text.versus} ${formatTeamName(prediction.awayName, languageMode)}.`}
       </p>
       {contextMessage && <p className="advisor-context-note">{contextMessage}</p>}
 
       <form className="advisor-chat" onSubmit={askAssistant}>
         <input
           onChange={(event) => setQuestion(event.target.value)}
-          placeholder="Ask about chances, risk, draw, or predicted score"
+          placeholder={text.askPlaceholder}
           value={question}
         />
         <button disabled={isAnalyzing || !question.trim()} type="submit">
-          {isAnalyzing ? 'Wait' : 'Send'}
+          {isAnalyzing ? text.wait : text.send}
         </button>
       </form>
     </section>
   );
 }
 
-function InternetContextPanel({ prediction }: { prediction: WorldCupPrediction }) {
+function InternetContextPanel({ prediction, text }: { prediction: WorldCupPrediction; text: UiCopy }) {
   const [context, setContext] = useState<InternetContext | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('Press refresh to pull current web context for this match.');
+  const [message, setMessage] = useState<string>(text.contextDefault);
 
   useEffect(() => {
     setContext(null);
-    setMessage('Press refresh to pull current web context for this match.');
-  }, [prediction.id]);
+    setMessage(text.contextDefault);
+  }, [prediction.id, text.contextDefault]);
 
   async function refreshContext() {
     setIsLoading(true);
-    setMessage('Searching the internet and checking sources...');
+    setMessage(text.contextSearching);
 
     try {
       const nextContext = await loadInternetContext(prediction);
       setContext(nextContext);
-      setMessage('Updated with internet-grounded context.');
+      setMessage(text.contextUpdated);
     } catch {
       setContext({
         text: [
-          `Could not reach the internet context service yet.`,
-          `Use the model probabilities as a baseline: ${prediction.consensusPick} is the AI pick at ${prediction.confidence}% confidence, projected ${prediction.predictedScore}.`,
-          `Check team news, injuries, travel, and confirmed lineups before making a final choice.`,
+          text.contextFallback1,
+          `${text.aiPick}: ${prediction.consensusPick}, ${text.confidence.toLowerCase()} ${prediction.confidence}%, ${text.projectedScore.toLowerCase()} ${prediction.predictedScore}.`,
+          text.contextFallback3,
         ].join('\n'),
         sources: [],
       });
-      setMessage('Internet context is unavailable. Showing local decision checklist.');
+      setMessage(text.contextUnavailable);
     } finally {
       setIsLoading(false);
     }
@@ -584,11 +942,11 @@ function InternetContextPanel({ prediction }: { prediction: WorldCupPrediction }
     <section className="internet-context" aria-label="Internet match context">
       <div className="section-title compact">
         <div>
-          <p>Internet check</p>
-          <h2>Decision context</h2>
+          <p>{text.internetCheck}</p>
+          <h2>{text.decisionContext}</h2>
         </div>
         <button disabled={isLoading} onClick={refreshContext} type="button">
-          {isLoading ? 'Searching' : 'Refresh'}
+          {isLoading ? text.searching : text.refresh}
         </button>
       </div>
 
@@ -737,34 +1095,34 @@ async function completeMissingPredictions(predictions: WorldCupPrediction[]) {
   return Promise.all(predictions.map((prediction) => completePredictionWithAi(prediction)));
 }
 
-function MatchDetails({ prediction }: { prediction: WorldCupPrediction }) {
+function MatchDetails({ prediction, text }: { prediction: WorldCupPrediction; text: UiCopy }) {
   const modelAgreement = prediction.modelBreakdown.filter((model) => model.pick === prediction.consensusPick).length;
 
   return (
     <section className="match-details" aria-label="Match details">
       <div className="section-title compact">
         <div>
-          <p>Match page</p>
-          <h2>Details</h2>
+          <p>{text.matchPage}</p>
+          <h2>{text.details}</h2>
         </div>
-        <span>{prediction.stage}</span>
+        <span>{formatStage(prediction.stage, text)}</span>
       </div>
       <div className="detail-grid">
         <div>
-          <span>Venue</span>
+          <span>{text.venue}</span>
           <strong>{prediction.venue}</strong>
         </div>
         <div>
-          <span>Kickoff</span>
-          <strong>{formatMatchDate(prediction.matchTime)}</strong>
+          <span>{text.kickoff}</span>
+          <strong>{formatMatchDate(prediction.matchTime, text.dateLocale)}</strong>
         </div>
         <div>
-          <span>Models agree</span>
+          <span>{text.modelsAgree}</span>
           <strong>{modelAgreement}/{prediction.modelBreakdown.length}</strong>
         </div>
         <div>
-          <span>Status</span>
-          <strong>{prediction.status}</strong>
+          <span>{text.status}</span>
+          <strong>{formatMatchStatus(prediction.status, text)}</strong>
         </div>
       </div>
     </section>
@@ -774,9 +1132,11 @@ function MatchDetails({ prediction }: { prediction: WorldCupPrediction }) {
 function MyPredictionBox({
   accessMode,
   prediction,
+  text,
 }: {
   accessMode: Exclude<AccessMode, null>;
   prediction: WorldCupPrediction;
+  text: UiCopy;
 }) {
   const [score, setScore] = useState('');
   const [note, setNote] = useState('');
@@ -809,8 +1169,8 @@ function MyPredictionBox({
           setNote(loaded.note);
         }
       })
-      .catch(() => setMessage('Could not load your saved prediction.'));
-  }, [accessMode, prediction]);
+      .catch(() => setMessage(text.couldNotLoadPrediction));
+  }, [accessMode, prediction, text.couldNotLoadPrediction]);
 
   async function handleSave(event: FormEvent) {
     event.preventDefault();
@@ -827,14 +1187,14 @@ function MyPredictionBox({
         };
         window.localStorage.setItem(`guest-prediction:${prediction.id}`, JSON.stringify(localPrediction));
         setSavedPrediction(localPrediction);
-        setMessage('Saved on this device as guest.');
+        setMessage(text.savedGuest);
       } else {
         const saved = await saveUserPrediction(prediction.id, score, note);
         setSavedPrediction(saved);
-        setMessage('Saved to your account.');
+        setMessage(text.savedAccount);
       }
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Could not save prediction.');
+      setMessage(error instanceof Error ? error.message : text.couldNotSavePrediction);
     } finally {
       setIsSaving(false);
     }
@@ -844,8 +1204,8 @@ function MyPredictionBox({
     <section className="my-prediction">
       <div className="section-title compact">
         <div>
-          <p>My prediction</p>
-          <h2>Your score</h2>
+          <p>{text.myPrediction}</p>
+          <h2>{text.yourScore}</h2>
         </div>
         {savedPrediction && <span>{savedPrediction.predictedScore}</span>}
       </div>
@@ -859,11 +1219,11 @@ function MyPredictionBox({
         />
         <input
           onChange={(event) => setNote(event.target.value)}
-          placeholder="Short note"
+          placeholder={text.shortNote}
           value={note}
         />
         <button disabled={isSaving} type="submit">
-          {isSaving ? 'Saving' : 'Save'}
+          {isSaving ? text.saving : text.save}
         </button>
       </form>
       {message && <p>{message}</p>}
@@ -871,7 +1231,7 @@ function MyPredictionBox({
   );
 }
 
-function PenaltyGame() {
+function PenaltyGame({ text }: { text: UiCopy }) {
   const resetTimer = useRef<number | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
   const [shots, setShots] = useState(0);
@@ -882,7 +1242,7 @@ function PenaltyGame() {
   const [target, setTarget] = useState<ShotTarget>({ x: 50, y: 78 });
   const [lastTarget, setLastTarget] = useState<ShotTarget>({ x: 50, y: 78 });
   const [shotState, setShotState] = useState<'ready' | 'goal' | 'saved'>('ready');
-  const [message, setMessage] = useState('Move the cursor inside the goal and click to shoot.');
+  const [message, setMessage] = useState<string>(text.gameReady);
   const [isAutoRestarting, setIsAutoRestarting] = useState(false);
   const [difficulty, setDifficulty] = useState<GameDifficulty>('normal');
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -989,12 +1349,12 @@ function PenaltyGame() {
     setShotState(scored ? 'goal' : 'saved');
     setShots(nextShots);
     setGoals(nextGoals);
-    setMessage(scored ? 'Goal. Clean finish.' : 'Saved. The keeper reached it.');
+    setMessage(scored ? text.gameGoal : text.gameSaved);
 
     resetTimer.current = window.setTimeout(() => {
       if (nextShots >= 5) {
         setIsAutoRestarting(true);
-        setMessage(`Series complete: ${nextGoals}/5. New round starts automatically.`);
+        setMessage(`${text.seriesComplete}: ${nextGoals}/5. ${text.newRoundAuto}`);
 
         resetTimer.current = window.setTimeout(() => {
           setShots(0);
@@ -1006,7 +1366,7 @@ function PenaltyGame() {
           setKeeperDive('center');
           setShotState('ready');
           setIsAutoRestarting(false);
-          setMessage('New round. Move the cursor inside the goal and click to shoot.');
+          setMessage(`${text.newRound} ${text.gameReady}`);
         }, 2200);
 
         return;
@@ -1017,7 +1377,7 @@ function PenaltyGame() {
       setKeeperY(44);
       setKeeperDive('center');
       setShotState('ready');
-      setMessage('Move the cursor inside the goal and click to shoot.');
+      setMessage(text.gameReady);
     }, 850);
   }
 
@@ -1034,7 +1394,7 @@ function PenaltyGame() {
     setLastTarget({ x: 50, y: 78 });
     setShotState('ready');
     setIsAutoRestarting(false);
-    setMessage('Move the cursor inside the goal and click to shoot.');
+    setMessage(text.gameReady);
   }
 
   function shootAtPointer(event: PointerEvent<HTMLDivElement>) {
@@ -1058,10 +1418,10 @@ function PenaltyGame() {
     <section className="mini-game" aria-label="Penalty mini game">
       <div className="section-title">
         <div>
-          <p>Mini game</p>
-          <h2>Penalty shootout</h2>
+          <p>{text.miniGame}</p>
+          <h2>{text.penaltyShootout}</h2>
         </div>
-        <span className={shotState === 'goal' ? 'score-pop' : ''}>{goals}/5 goals</span>
+        <span className={shotState === 'goal' ? 'score-pop' : ''}>{goals}/5 {text.goals}</span>
       </div>
 
       <div className="game-options" aria-label="Penalty settings">
@@ -1073,15 +1433,15 @@ function PenaltyGame() {
               type="button"
               key={level}
             >
-              {level}
+              {level === 'easy' ? text.easy : level === 'hard' ? text.hard : text.normal}
             </button>
           ))}
         </div>
         <button className="sound-toggle" onClick={() => setSoundEnabled((enabled) => !enabled)} type="button">
-          Sound {soundEnabled ? 'On' : 'Off'}
+          {text.sound} {soundEnabled ? text.on : text.off}
         </button>
         <button className="sound-toggle reset-shot" onClick={resetGame} type="button">
-          Reset
+          {text.reset}
         </button>
       </div>
 
@@ -1122,8 +1482,8 @@ function PenaltyGame() {
         <strong>{message}</strong>
         <span>
           {isAutoRestarting
-            ? 'Restarting...'
-            : `Shot ${Math.min(shots + 1, 5)} of 5 / target ${Math.round(target.x)}-${Math.round(target.y)}`}
+            ? text.restarting
+            : `${text.shot} ${Math.min(shots + 1, 5)} ${text.of} 5 / ${text.target} ${Math.round(target.x)}-${Math.round(target.y)}`}
         </span>
       </div>
     </section>
@@ -1225,6 +1585,8 @@ function App() {
     .sort((a, b) => a.confidence - b.confidence)[0] ?? null;
   const groups = groupStandings.filter((group) => ['A', 'E', 'I', 'L'].includes(group.group));
   const soonMatch = getSoonMatch(displayPredictions);
+  const confidenceBadge = selectedPrediction ? getConfidenceBadge(selectedPrediction, text) : null;
+  const selectedScore = selectedPrediction ? splitScore(selectedPrediction.predictedScore) : null;
   const toggleLanguage = () => setLanguageMode((current) => current === 'en' ? 'ru' : 'en');
 
   if (!accessMode) {
@@ -1279,8 +1641,7 @@ function App() {
             <p className="eyebrow">{text.heroEyebrow}</p>
             <h1>{text.heroTitle}</h1>
             <p className="hero__copy">
-              ScoreGPT predictions are loaded from Supabase. If the feed has no current rows,
-              the site shows an error instead of a fake demo prediction.
+              {text.note}
             </p>
             <div className="hero__stats" aria-label="Prediction summary">
               <div>
@@ -1288,12 +1649,12 @@ function App() {
                 <small>{text.nextMatches}</small>
               </div>
               <div>
-                <span>{isLoadingPredictions ? 'Checking' : 'Error'}</span>
+                <span>{isLoadingPredictions ? text.checking : text.error}</span>
                 <small>{text.dataSource}</small>
               </div>
               <div>
-                <span>Real</span>
-                <small>data mode</small>
+                <span>{text.real}</span>
+                <small>{text.dataMode}</small>
               </div>
             </div>
           </div>
@@ -1303,30 +1664,37 @@ function App() {
           <section className="match-board real-data-empty">
             <div className="section-title">
               <div>
-                <p>Realtime feed</p>
-                <h2>No real matches loaded</h2>
+                <p>{text.realtimeFeed}</p>
+                <h2>{isLoadingPredictions ? text.checkingPredictions : text.noRealMatches}</h2>
               </div>
-              <span className="status-pill">Real only</span>
+              <span className="status-pill">{text.realOnly}</span>
             </div>
+            {isLoadingPredictions && (
+              <div className="skeleton-board" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+            )}
             <p>
               {isLoadingPredictions
-                ? 'Checking current ScoreGPT predictions from Supabase...'
-                : loadError || 'No current ScoreGPT predictions are available right now.'}
+                ? text.checkingPredictions
+                : loadError || text.noCurrentPredictions}
             </p>
             <button disabled={isLoadingPredictions} onClick={refreshPredictions} type="button">
-              {isLoadingPredictions ? 'Checking' : 'Refresh real data'}
+              {isLoadingPredictions ? text.checking : text.refreshRealData}
             </button>
             <a href="https://scoregpt.app/world-cup-2026" rel="noreferrer" target="_blank">
-              Source: ScoreGPT
+              {text.source}: ScoreGPT
             </a>
           </section>
         </section>
 
-        <PenaltyGame />
+        <PenaltyGame text={text} />
         <section className="bottom-language-panel" aria-label="Language switcher">
-          <span>{languageMode === 'ru' ? 'Язык сайта' : 'Site language'}</span>
+          <span>{text.bottomLanguage}</span>
           <button className="language-toggle" onClick={toggleLanguage} type="button">
-            {languageMode === 'ru' ? 'Switch to English' : 'Переключить на русский'}
+            {text.switchLanguage}
           </button>
         </section>
       </main>
@@ -1395,20 +1763,28 @@ function App() {
       {soonMatch && (
         <section className="soon-alert">
           <span>{text.matchSoon}</span>
-          <strong>{soonMatch.homeCode} vs {soonMatch.awayCode}</strong>
-          <small>{formatMatchDate(soonMatch.matchTime)} / {text.aiPick} {soonMatch.consensusPick}</small>
+          <strong>{formatMatchLabel(soonMatch, languageMode, text)}</strong>
+          <small>{formatMatchDate(soonMatch.matchTime, text.dateLocale)} / {text.aiPick} {soonMatch.consensusPick}</small>
         </section>
       )}
+
+      <section className="color-legend" aria-label={text.colorLegend}>
+        <span>{text.colorLegend}</span>
+        <small className="legend-data">{text.legendData}</small>
+        <small className="legend-favorite">{text.legendFavorite}</small>
+        <small className="legend-risk">{text.legendRisk}</small>
+        <small className="legend-ai">{text.legendAi}</small>
+      </section>
 
       <section className="dashboard" id="matches">
         <section className="fixture-list" aria-label="Upcoming fixtures">
           <div className="section-title">
             <div>
-              <p>Realtime feed</p>
-              <h2>Next matches</h2>
+              <p>{text.realtimeFeed}</p>
+              <h2>{text.nextMatches}</h2>
             </div>
             <span className={isLive ? 'status-pill is-live' : 'status-pill'}>
-              {isLive ? 'Connected' : 'Real only'}
+              {isLive ? text.connected : text.realOnly}
             </span>
           </div>
 
@@ -1416,10 +1792,10 @@ function App() {
 
           <div className="filter-tabs" aria-label="Match filters">
             {[
-              { key: 'all', label: 'All' },
-              { key: 'live', label: 'Live' },
-              { key: 'high', label: 'High confidence' },
-              { key: 'upset', label: 'Upset alert' },
+              { key: 'all', label: text.all },
+              { key: 'live', label: text.live },
+              { key: 'high', label: text.highConfidence },
+              { key: 'upset', label: text.upsetAlert },
             ].map((filter) => (
               <button
                 className={matchFilter === filter.key ? 'is-active' : ''}
@@ -1440,127 +1816,144 @@ function App() {
                 onClick={() => setSelectedId(prediction.id)}
                 type="button"
               >
-                <span>{formatMatchDate(prediction.matchTime)} / {prediction.stage}</span>
-                <strong>{prediction.homeCode} vs {prediction.awayCode}</strong>
-                <small>AI pick: {prediction.consensusPick} / {prediction.confidence}%</small>
+                <span className="fixture-time">{formatMatchDate(prediction.matchTime, text.dateLocale)}</span>
+                <strong>{formatMatchLabel(prediction, languageMode, text)}</strong>
+                <span className="fixture-pick">
+                  <small>{formatStage(prediction.stage, text)}</small>
+                  <b>{prediction.consensusPick} / {prediction.confidence}%</b>
+                </span>
               </button>
             ))}
             {visiblePredictions.length === 0 && (
-              <p className="empty-filter">No matches in this filter yet.</p>
+              <p className="empty-filter">{text.noMatchesFilter}</p>
             )}
           </div>
         </section>
 
         <section className="match-board">
-          <div className="match-header">
-            <div>
-              <p>{selectedPrediction.stage} / {selectedPrediction.venue}</p>
-              <h2>{selectedPrediction.homeName} vs {selectedPrediction.awayName}</h2>
+          <section className="scoreboard-card">
+            <div className="scoreboard-topline">
+              <span>{formatStage(selectedPrediction.stage, text)} / {selectedPrediction.venue}</span>
+              <span>{formatMatchDate(selectedPrediction.matchTime, text.dateLocale)}</span>
             </div>
-            <span>{formatMatchDate(selectedPrediction.matchTime)}</span>
-          </div>
 
-          <div className="consensus-card">
-            <div className="team-side">
-              <span>Home</span>
-              <strong>{selectedPrediction.homeCode}</strong>
-              <small>{selectedPrediction.homeWin.toFixed(1)}%</small>
-            </div>
-            <div className="pick-center">
-              <span>AI consensus</span>
-              <strong>{selectedPrediction.consensusPick}</strong>
-              <small className="score-backdrop">Projected score {selectedPrediction.predictedScore}</small>
-            </div>
-            <div className="team-side align-right">
-              <span>Away</span>
-              <strong>{selectedPrediction.awayCode}</strong>
-              <small>{selectedPrediction.awayWin.toFixed(1)}%</small>
-            </div>
-          </div>
+            <div className="scoreboard-main">
+              <div className="score-team home-team">
+                <span>{text.home}</span>
+                <strong>{selectedPrediction.homeCode}</strong>
+                <small>{formatTeamName(selectedPrediction.homeName, languageMode)}</small>
+              </div>
 
-          <div className="probability-row" aria-label="Consensus probabilities">
-            <div style={{ width: `${selectedPrediction.homeWin}%` }}>Home</div>
-            <div style={{ width: `${selectedPrediction.draw}%` }}>Draw</div>
-            <div style={{ width: `${selectedPrediction.awayWin}%` }}>Away</div>
-          </div>
+              <div className="score-center">
+                <span>{text.projectedScore}</span>
+                <strong>{selectedScore?.home ?? '-'}<small>-</small>{selectedScore?.away ?? '-'}</strong>
+                <em>{text.aiPick}: {selectedPrediction.consensusPick}</em>
+                {confidenceBadge && (
+                  <b className={`confidence-badge ${confidenceBadge.className}`}>
+                    {text.confidenceLevel}: {confidenceBadge.label} / {selectedPrediction.confidence}%
+                  </b>
+                )}
+              </div>
+
+              <div className="score-team away-team">
+                <span>{text.away}</span>
+                <strong>{selectedPrediction.awayCode}</strong>
+                <small>{formatTeamName(selectedPrediction.awayName, languageMode)}</small>
+              </div>
+            </div>
+
+            <div className="probability-chart" aria-label="Consensus probabilities">
+              {[
+                { key: 'home', label: text.home, value: selectedPrediction.homeWin },
+                { key: 'draw', label: text.draw, value: selectedPrediction.draw },
+                { key: 'away', label: text.away, value: selectedPrediction.awayWin },
+              ].map((item) => (
+                <div className={`probability-bar probability-${item.key}`} key={item.key}>
+                  <span style={{ height: `${item.value}%` }} />
+                  <strong>{item.value.toFixed(1)}%</strong>
+                  <small>{item.label}</small>
+                </div>
+              ))}
+            </div>
+          </section>
 
           <article className="ai-summary">
-            <span>AI read</span>
+            <span>{text.aiRead}</span>
             <p>{selectedPrediction.aiSummary}</p>
             <div className="source-line">
               <strong>{selectedPrediction.sourceName}</strong>
               {selectedPrediction.sourceUrl && (
                 <a href={selectedPrediction.sourceUrl} rel="noreferrer" target="_blank">
-                  Source
+                  {text.source}
                 </a>
               )}
             </div>
-            <small>Updated {formatMatchDate(selectedPrediction.updatedAt)}</small>
+            <small>{text.updated} {formatMatchDate(selectedPrediction.updatedAt, text.dateLocale)}</small>
           </article>
 
-          <InternetContextPanel prediction={selectedPrediction} />
+          <InternetContextPanel prediction={selectedPrediction} text={text} />
 
           <div className="model-grid" id="models">
             {selectedPrediction.modelBreakdown.map((model) => (
               <article className="model-card" key={model.model}>
                 <div>
-                  <span>Model prediction</span>
+                  <span>{text.modelPrediction}</span>
                   <strong>{model.model}</strong>
                 </div>
                 <div className="model-pick">{model.pick}</div>
                 <div className="model-lines">
-                  <span>Score {model.score}</span>
-                  <span>Confidence {model.confidence}%</span>
-                  <span>{selectedPrediction.status}</span>
+                  <span>{text.score} {model.score}</span>
+                  <span>{text.confidence} {model.confidence}%</span>
+                  <span>{formatMatchStatus(selectedPrediction.status, text)}</span>
                 </div>
-                <small>Updates when Supabase row changes</small>
+                <small>{text.updatesWhenSupabase}</small>
               </article>
             ))}
           </div>
 
-          <MatchDetails prediction={selectedPrediction} />
-          <MyPredictionBox accessMode={accessMode} prediction={selectedPrediction} />
-          <MatchAssistant prediction={selectedPrediction} />
+          <MatchDetails prediction={selectedPrediction} text={text} />
+          <MyPredictionBox accessMode={accessMode} prediction={selectedPrediction} text={text} />
+          <MatchAssistant languageMode={languageMode} prediction={selectedPrediction} text={text} />
         </section>
 
         <aside className="side-panel">
           {upsetAlert && (
             <div className="track-card upset-card">
-              <span>Upset alert</span>
-              <strong>{upsetAlert.homeCode} - {upsetAlert.awayCode}</strong>
-              <p>{upsetAlert.consensusPick} is the pick, but confidence is only {upsetAlert.confidence}%.</p>
+              <span>{text.upsetAlert}</span>
+              <strong>{formatMatchLabel(upsetAlert, languageMode, text)}</strong>
+              <p>{text.aiPick}: {upsetAlert.consensusPick}, {text.confidence.toLowerCase()} {upsetAlert.confidence}%.</p>
             </div>
           )}
 
           <div className="track-card">
-            <span>Live now</span>
+            <span>{text.liveNow}</span>
             <strong>{liveMatches}</strong>
-            <p>Matches marked as live in Supabase.</p>
+            <p>{text.matchesMarkedLive}</p>
           </div>
 
           <div className="track-card">
-            <span>Best value</span>
+            <span>{text.bestValue}</span>
             <strong>{selectedPrediction.consensusPick}</strong>
-            <p>Highest consensus probability for the selected match.</p>
+            <p>{text.highestConsensus}</p>
           </div>
 
           <section className="groups" id="groups">
             <div className="section-title compact">
               <div>
-                <p>Groups</p>
-                <h2>Key groups</h2>
+                <p>{text.groups}</p>
+                <h2>{text.keyGroups}</h2>
               </div>
             </div>
             {groups.map((group) => (
               <article className="group-card" key={group.group}>
-                <strong>Group {group.group}</strong>
+                <strong>{text.group} {group.group}</strong>
                 <div className="group-heading">
-                  <span>Team</span>
-                  <small>P / Pts</small>
+                  <span>{text.team}</span>
+                  <small>{text.playedPoints}</small>
                 </div>
                 {group.teams.map((team, index) => (
-                  <div className="group-row" key={team.name}>
-                    <span>{index + 1}. {team.qualified ? '⚽ ' : ''}{team.name}</span>
+                  <div className={team.qualified ? 'group-row is-qualified' : 'group-row'} key={team.name}>
+                    <span>{index + 1}. {formatTeamName(team.name, languageMode)}</span>
                     <small>{team.played} / {team.points}</small>
                   </div>
                 ))}
@@ -1570,11 +1963,15 @@ function App() {
         </aside>
       </section>
 
-      <PenaltyGame />
+      <a className="ask-ai-fab" href="#ai-assistant">
+        {text.askAi}
+      </a>
+
+      <PenaltyGame text={text} />
       <section className="bottom-language-panel" aria-label="Language switcher">
-        <span>{languageMode === 'ru' ? 'Язык сайта' : 'Site language'}</span>
+        <span>{text.bottomLanguage}</span>
         <button className="language-toggle" onClick={toggleLanguage} type="button">
-          {languageMode === 'ru' ? 'Switch to English' : 'Переключить на русский'}
+          {text.switchLanguage}
         </button>
       </section>
     </main>
